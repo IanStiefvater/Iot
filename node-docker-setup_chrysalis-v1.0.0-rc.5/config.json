@@ -1,0 +1,69 @@
+{
+  "restAPI": {
+    "publicRoutes": [
+      "/health",
+      "/mqtt",
+      "/api/routes",
+      "/api/v1/info",
+      "/api/v1/tips",
+      "/api/v1/messages*",
+      "/api/v1/transactions*",
+      "/api/v1/milestones*",
+      "/api/v1/outputs*",
+      "/api/v1/addresses*",
+      "/api/v1/treasury",
+      "/api/v1/receipts*",
+      "/api/plugins/participation/events*",
+      "/api/plugins/participation/outputs*",
+      "/api/plugins/participation/addresses*"
+    ],
+    "protectedRoutes": [
+      "/api/v1/*",
+      "/api/plugins/*"
+    ],
+    "powEnabled": false
+  },
+  "pruning": {
+    "size": {
+      "targetSize": "30GB"
+    }
+  },
+  "node": {
+    "alias": "HORNET mainnet node",
+    "disablePlugins": [],
+    "enablePlugins": [
+      "Autopeering",
+      "Participation",
+      "Prometheus",
+      "Spammer",
+      "POI"
+    ]
+  },
+  "network": {
+    "portTCP": 9000,
+    "portUDP": 14626
+  },
+  "gossip": {
+    "bindAddress": "0.0.0.0:15600",
+    "autopeering": {
+      "bindAddress": "0.0.0.0:14265",
+      "peering": {
+        "bindAddress": "0.0.0.0:15600",
+        "udpBindAddress": "0.0.0.0:14626",
+        "knownPeers": []
+      }
+    }
+  },
+  "mqtt": {
+    "port": 1883
+  },
+  "httpAPI": {
+    "bindAddress": "0.0.0.0:8081",
+    "port": 8081,
+    "auth": {
+      "username": "${DASHBOARD_USERNAME:-admin}",
+      "passwordHash": "${DASHBOARD_PASSWORD:-0000000000000000000000000000000000000000000000000000000000000000}",
+      "passwordSalt": "${DASHBOARD_SALT:-0000000000000000000000000000000000000000000000000000000000000000}"
+    }
+  }
+}

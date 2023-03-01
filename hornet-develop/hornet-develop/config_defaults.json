@@ -1,0 +1,275 @@
+{
+  "app": {
+    "checkForUpdates": true,
+    "shutdown": {
+      "stopGracePeriod": "5m",
+      "log": {
+        "enabled": true,
+        "filePath": "shutdown.log"
+      }
+    }
+  },
+  "logger": {
+    "level": "info",
+    "disableCaller": true,
+    "disableStacktrace": false,
+    "stacktraceLevel": "panic",
+    "encoding": "console",
+    "outputPaths": [
+      "stdout"
+    ],
+    "disableEvents": true
+  },
+  "node": {
+    "profile": "auto",
+    "alias": "HORNET node"
+  },
+  "protocol": {
+    "targetNetworkName": "shimmer",
+    "milestonePublicKeyCount": 7,
+    "baseToken": {
+      "name": "Shimmer",
+      "tickerSymbol": "SMR",
+      "unit": "SMR",
+      "subunit": "glow",
+      "decimals": 6,
+      "useMetricPrefix": false
+    },
+    "publicKeyRanges": [
+      {
+        "key": "a507d2a592a5f0424ed8530603c08acebe088ae26211e90b79bfec0970a2397f",
+        "start": 0,
+        "end": 0
+      },
+      {
+        "key": "71a09774449a081450a51e0245a1e9850190f93508fd8f21bb9b9ca169765f30",
+        "start": 0,
+        "end": 0
+      },
+      {
+        "key": "a375515bfe5adf7fedb64ef4cebe1e621e85a056b0ccd5db72bc0d474325bf38",
+        "start": 0,
+        "end": 0
+      },
+      {
+        "key": "1df26178a7914126fd8cb934c7a7437073794c1c8ce99319172436b1d4973eba",
+        "start": 0,
+        "end": 0
+      },
+      {
+        "key": "45432d7c767e16586403262331a725c7eaa0b2dd79ea442f373c845ae3443aa9",
+        "start": 0,
+        "end": 0
+      },
+      {
+        "key": "9d87b4d2538b10799b582e25ace4726d92d7798ddfb696ff08e450db7917c9ad",
+        "start": 0,
+        "end": 0
+      },
+      {
+        "key": "a921841628d64c3f08bd344118b8106ade072e68c774beff30135e036194493a",
+        "start": 0,
+        "end": 0
+      },
+      {
+        "key": "16ee3356c21e410a0aaab42896021b1a857eb8d97a14a66fed9b13d634c21317",
+        "start": 0,
+        "end": 0
+      },
+      {
+        "key": "99c7d9752c295cb56b550191015ab5a40226fb632e8b02ec15cfe574ea17cf67",
+        "start": 0,
+        "end": 0
+      },
+      {
+        "key": "4af647910ba47000108b87c63abe0545643f9b203eacee2b713729b0450983fe",
+        "start": 0,
+        "end": 0
+      }
+    ]
+  },
+  "db": {
+    "engine": "rocksdb",
+    "path": "shimmer/database",
+    "autoRevalidation": false,
+    "checkLedgerStateOnStartup": false
+  },
+  "pow": {
+    "refreshTipsInterval": "5s"
+  },
+  "p2p": {
+    "bindMultiAddresses": [
+      "/ip4/0.0.0.0/tcp/15600",
+      "/ip6/::/tcp/15600"
+    ],
+    "connectionManager": {
+      "highWatermark": 10,
+      "lowWatermark": 5
+    },
+    "identityPrivateKey": "",
+    "db": {
+      "path": "shimmer/p2pstore"
+    },
+    "reconnectInterval": "30s",
+    "gossip": {
+      "unknownPeersLimit": 4,
+      "streamReadTimeout": "1m",
+      "streamWriteTimeout": "10s"
+    },
+    "autopeering": {
+      "enabled": false,
+      "bindAddress": "0.0.0.0:14626",
+      "entryNodes": [
+        "/dns/entry-hornet-0.h.shimmer.network/udp/14626/autopeering/HK6EKbNtjwve9HMbL6PH6R3uLXZYQoBoqNPD5LsoWuA6",
+        "/dns/entry-hornet-1.h.shimmer.network/udp/14626/autopeering/BT8EiSRXTixnH2wMoy4ecNpVtiAXxfXKfYsJ2KvU3WLx"
+      ],
+      "entryNodesPreferIPv6": false,
+      "runAsEntryNode": false
+    }
+  },
+  "requests": {
+    "discardOlderThan": "15s",
+    "pendingReEnqueueInterval": "5s"
+  },
+  "tangle": {
+    "milestoneTimeout": "30s",
+    "maxDeltaBlockYoungestConeRootIndexToCMI": 8,
+    "maxDeltaBlockOldestConeRootIndexToCMI": 13,
+    "whiteFlagParentsSolidTimeout": "2s"
+  },
+  "snapshots": {
+    "enabled": false,
+    "depth": 50,
+    "interval": 200,
+    "fullPath": "shimmer/snapshots/full_snapshot.bin",
+    "deltaPath": "shimmer/snapshots/delta_snapshot.bin",
+    "deltaSizeThresholdPercentage": 50,
+    "deltaSizeThresholdMinSize": "50M",
+    "downloadURLs": [
+      {
+        "full": "https://files.shimmer.network/snapshots/latest-full_snapshot.bin",
+        "delta": "https://files.shimmer.network/snapshots/latest-delta_snapshot.bin"
+      }
+    ]
+  },
+  "pruning": {
+    "milestones": {
+      "enabled": false,
+      "maxMilestonesToKeep": 60480
+    },
+    "size": {
+      "enabled": true,
+      "targetSize": "30GB",
+      "thresholdPercentage": 10,
+      "cooldownTime": "5m"
+    },
+    "pruneReceipts": false
+  },
+  "profiling": {
+    "enabled": false,
+    "bindAddress": "localhost:6060"
+  },
+  "restAPI": {
+    "enabled": true,
+    "bindAddress": "0.0.0.0:14265",
+    "publicRoutes": [
+      "/health",
+      "/api/routes",
+      "/api/core/v2/info",
+      "/api/core/v2/tips",
+      "/api/core/v2/blocks*",
+      "/api/core/v2/transactions*",
+      "/api/core/v2/milestones*",
+      "/api/core/v2/outputs*",
+      "/api/core/v2/treasury",
+      "/api/core/v2/receipts*",
+      "/api/debug/v1/*",
+      "/api/indexer/v1/*",
+      "/api/mqtt/v1",
+      "/api/participation/v1/events*",
+      "/api/participation/v1/outputs*",
+      "/api/participation/v1/addresses*"
+    ],
+    "protectedRoutes": [
+      "/api/*"
+    ],
+    "debugRequestLoggerEnabled": false,
+    "jwtAuth": {
+      "salt": "HORNET"
+    },
+    "pow": {
+      "enabled": false,
+      "workerCount": 1
+    },
+    "limits": {
+      "maxBodyLength": "1M",
+      "maxResults": 1000
+    }
+  },
+  "warpsync": {
+    "enabled": true,
+    "advancementRange": 150
+  },
+  "tipsel": {
+    "enabled": true,
+    "nonLazy": {
+      "retentionRulesTipsLimit": 100,
+      "maxReferencedTipAge": "3s",
+      "maxChildren": 30
+    },
+    "semiLazy": {
+      "retentionRulesTipsLimit": 20,
+      "maxReferencedTipAge": "3s",
+      "maxChildren": 2
+    }
+  },
+  "receipts": {
+    "enabled": false,
+    "backup": {
+      "enabled": false,
+      "path": "receipts"
+    },
+    "validator": {
+      "validate": false,
+      "ignoreSoftErrors": false,
+      "api": {
+        "address": "http://localhost:14266",
+        "timeout": "5s"
+      },
+      "coordinator": {
+        "address": "UDYXTZBE9GZGPM9SSQV9LTZNDLJIZMPUVVXYXFYVBLIEUHLSEWFTKZZLXYRHHWVQV9MNNX9KZC9D9UZWZ",
+        "merkleTreeDepth": 24
+      }
+    }
+  },
+  "prometheus": {
+    "enabled": false,
+    "bindAddress": "localhost:9311",
+    "fileServiceDiscovery": {
+      "enabled": false,
+      "path": "target.json",
+      "target": "localhost:9311"
+    },
+    "databaseMetrics": true,
+    "nodeMetrics": true,
+    "gossipMetrics": true,
+    "cachesMetrics": true,
+    "restAPIMetrics": true,
+    "inxMetrics": true,
+    "migrationMetrics": true,
+    "debugMetrics": false,
+    "goMetrics": false,
+    "processMetrics": false,
+    "promhttpMetrics": false
+  },
+  "inx": {
+    "enabled": false,
+    "bindAddress": "localhost:9029",
+    "pow": {
+      "workerCount": 0
+    }
+  },
+  "debug": {
+    "enabled": false
+  }
+}
