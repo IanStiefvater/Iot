@@ -1,7 +1,0 @@
-Your hash: f306f7250ae5fde21219addb940a462f318ae1d30bc100999f40c7c742a70cfd
-Your salt: db32eddd964cfe816845aa05774d96a799daeed010637ff950f2936cc66c2072
-
-
-Dirección Ip del host: 192.168.100.72
-172.18.0.3
-comando para verificar puertos en power shell: telnet 192.168.100.72 (n° del puerto)
