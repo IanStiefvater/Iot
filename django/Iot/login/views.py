@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.http import HttpResponse
 from django.db import connection
-from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 
 from django.utils import timezone
 
@@ -20,7 +20,7 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('../../admin')  # redirigir a la proxima pagina
+            return redirect('shift')  # redirigir a la proxima pagina
         else:
             messages.success(
                 request, ("Credenciales incorrectas"))
@@ -29,6 +29,7 @@ def login_user(request):
         return render(request, 'login/login.html', {})
 
 
+@login_required
 def start_shift(request):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -45,8 +46,8 @@ def start_shift(request):
 
             # Handle missing keys
             pass
-        redirect("shift")
+        redirect("shift")  # aca rederigimos a los del ian
 
-    name = "Ian"
-    num_lines = 3
+    name = "Matias Valdivieso"
+    num_lines = 4
     return render(request, "login/turno.html", {"name": name, "num_lines": num_lines})
