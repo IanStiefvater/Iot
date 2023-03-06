@@ -119,7 +119,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Argentina/Buenos_Aires'
+
 
 USE_I18N = True
 
@@ -139,4 +140,8 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+<<<<<<< HEAD
 
+=======
+LOGIN_URL = '/authenticate/login/'
+>>>>>>> origin
