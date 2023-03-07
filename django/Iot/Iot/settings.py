@@ -89,9 +89,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'iot',
         'USER': 'root',
-        'PASSWORD': '653489',
+        'PASSWORD': 'lqazzaql',
         'HOST': 'localhost',
-        'PORT': '3307',
+        'PORT': '3306',
     }
 }"""
 
@@ -140,8 +140,5 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-<<<<<<< HEAD
 
-=======
 LOGIN_URL = '/authenticate/login/'
->>>>>>> origin

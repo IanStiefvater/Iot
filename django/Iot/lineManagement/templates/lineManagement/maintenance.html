@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>Control</title>
+    <style>
+        .circle {
+            display: inline-block;
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: solid 1px black;
+        }
+        .button:hover {
+            background-color: #091e3d;
+            transform: scale(1.05);
+            transition: 0.5s;
+        }
+        .circle:hover {
+            background-color: #0d6efd;
+        }
+        .circle:focus {
+            background-color: #0d6efd; 
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar navbar-expand-lg navbar-light bg-dark d-flex justify-content-evenly align-items-center" style="height: 100px;">
+        <nav class="w-100" >
+            <div class="container-fluid">
+                <button class="navbar-toggler btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon btn-light"></span>
+                </button>        
+              <div class="collapse navbar-collapse" id="navbarTogglerDemo01" style="font-size: 18px;">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 w-100 d-flex justify-content-evenly">
+                    <li class="nav-item mx-5 px-3">
+                        <a class="nav-link active text-white" aria-current="page" href="#">Inicio</a>
+                    </li>
+                    <li class="nav-item mx-5 px-3">
+                        <a class="nav-link active text-white" aria-current="page" href="#">Operación</a>
+                    </li>
+                    <li class="nav-item mx-5 px-3">
+                        <a class="nav-link text-white" href="#">Fin de turno</a>
+                    </li>
+                </ul>
+              </div>
+            </div>
+        </nav>
+    </header>
+    <main class="h-100">
+        <h1 class="pt-5 ms-3">Mantenimiento</h1>
+        <div class="py-5 d-flex justify-content-center">
+            <div class="d-flex mx-auto flex-column w-50 justify-content-center align-items-center">
+              <div class="d-flex my-3 align-items-center" style="height: 100px; width: 300px; border-radius: 15px; background-color: rgb(187, 187, 187);">
+                <p class="ms-3 mb-0 fs-4" style="color: rgb(80, 80, 80) ;">Name: Usuario</p>
+              </div>
+              <div class="d-flex my-3 align-items-center" style="height: 100px; width: 300px; border-radius: 15px; background-color: rgb(187, 187, 187);">
+                <p class="ms-3 mb-0 fs-4" style="color: rgb(80, 80, 80) ;">Linea de Producción 1</p>
+              </div>
+              <div class="d-flex my-3 align-items-center" style="height: 100px; width: 300px; border-radius: 15px; background-color: rgb(187, 187, 187);">
+                <p class="ms-3 mb-0 fs-4" style="color: rgb(80, 80, 80) ;">Block 5 / Vestido</p>
+              </div>
+            </div>
+            <div class="d-flex flex-grow-1 w-50 justify-content-center">
+              <div class="d-flex align-items-center bg-primary my-3" style="height: 100px; width: 450px; border-radius: 15px; background-color: #0d6efd;">
+                <p class="ms-3 mb-0 fs-4" style="color: rgb(255, 255, 255);">Turno 1</p>
+              </div>
+            </div>
+        </div>
+        <div class="w-30 mx-3 p-3 border border-1 border-dark d-flex justify-content-around" style="border-radius: 10px;">
+            <div>
+                <ul class="list-unstyled">
+                    <li class="list fs-5 d-flex align-items-center"><span class="circle"></span>Set Up</li>
+                    <li class="list fs-5 d-flex align-items-center"><span class="circle"></span>Mantenimiento</li>
+                    <li class="list fs-5 d-flex align-items-center"><span class="circle"></span>Imprevisto</li>
+                  </ul>
+            </div>
+            <div class="d-flex w-70 align-items-center">
+                <div class="d-flex align-items-center justify-content-center mx-4" style="width: 130px; height: 60px; background-color: rgb(85, 85, 85); border-radius: 10px;">
+                    <p class="text-white mb-0 fs-5">HORA</p>
+                </div>
+                <button class="button d-flex align-items-center justify-content-center mx-4" style="width: 130px; height: 60px; background-color: #0d6efd; border-radius: 10px; cursor: pointer; border: none">
+                    <span class="fs-5 text-white">DETENCIÓN</span>
+                </button>
+
+                <div class="d-flex align-items-center justify-content-center mx-4" style="width: 130px; height: 60px; background-color: rgb(85, 85, 85); border-radius: 10px;">
+                    <p class="text-white mb-0 fs-5">HORA</p>
+                </div>
+                <button class="button d-flex align-items-center justify-content-center mx-4" style="width: 130px; height: 60px; background-color: #0d6efd; border-radius: 10px; cursor: pointer; border: none;">
+                    <span class="fs-5 text-white">ARRANQUE</span>
+                </button>
+            </div>
+        </div>
+        <div class="w-30 mt-4 mx-3 p-3 border border-1 border-dark" style="border-radius: 10px; background-color: rgba(247, 143, 143, 0.726);">
+            <div>
+                <h3 class="fs-6 text-dark">DATOS HISTÓRICOS</h3>
+            </div>
+        </div>
+        <div class="d-flex mt-5 mb-5">
+            <div class="w-50 mt-5 mb-3">
+            </div>
+            <div class="d-flex justify-content-center w-50 mt-5 mb-3">
+                <div class="d-flex align-items-center justify-content-center mx-4" style="width: 250px; height: 100px; background-color: rgb(85, 85, 85); border-radius: 10px;">
+                    <p class="text-white mb-0 fs-5">HORA</p>
+                </div>
+                <button class="button d-flex align-items-center justify-content-center mx-4" style="width: 250px; height: 100px; background-color: #0d6efd; border-radius: 10px; cursor: pointer; border: none;">
+                    <span class="fs-5 text-white">TABLERO PRINCIPAL</span>
+                </button>
+            </div>
+        </div>
+    </main>
+</body>
