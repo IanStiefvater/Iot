@@ -21,11 +21,14 @@
             transform: scale(1.05);
             transition: 0.5s;
         }
-        .circle:hover {
-            background-color: #0d6efd;
-        }
-        .circle:focus {
-            background-color: #0d6efd; 
+        .lista {
+            display: inline-block;
+            border: none;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background: transparent;
+            overflow: hidden;
         }
     </style>
 </head>
@@ -72,29 +75,55 @@
               </div>
             </div>
         </div>
-        <div class="w-30 mx-3 p-3 border border-1 border-dark d-flex justify-content-around" style="border-radius: 10px;">
-            <div>
-                <ul class="list-unstyled">
-                    <li class="list fs-5 d-flex align-items-center"><span class="circle"></span>Set Up</li>
-                    <li class="list fs-5 d-flex align-items-center"><span class="circle"></span>Mantenimiento</li>
-                    <li class="list fs-5 d-flex align-items-center"><span class="circle"></span>Imprevisto</li>
-                  </ul>
-            </div>
-            <div class="d-flex w-70 align-items-center">
-                <div class="d-flex align-items-center justify-content-center mx-4" style="width: 130px; height: 60px; background-color: rgb(85, 85, 85); border-radius: 10px;">
-                    <p class="text-white mb-0 fs-5">HORA</p>
+        <div class="w-30 mx-3 p-3 border border-1 border-dark" style="border-radius: 10px;">
+            <form>
+                <div class="d-flex align-items-center justify-content-between my-4">
+                    <select size="3" class=" lista">
+                        <input type="radio" name="options" value="option1" style="width: 20px; height: 20px;">
+                        <label for="option1" class="fs-5">Set Up</label><br>
+                        <input type="radio" name="options" value="option2" style="width: 20px; height: 20px;">
+                        <label for="option2" class="fs-5">Mantenimiento</label><br>
+                        <input type="radio" name="options" value="option3" style="width: 20px; height: 20px;">
+                        <label for="option3" class="fs-5">Imprevisto</label>
+                    </select>
+                    <div class="d-flex">
+                        <div class="d-flex align-items-center justify-content-center mx-4" id="clock1" style="width: 130px; height: 60px; background-color: rgb(85, 85, 85); border-radius: 10px; color: white; font-size: 20px;">
+                            <p class="mb-0"></p>
+                        </div>
+                        <script>
+                            function updateClock() {
+                              var now = new Date();
+                              var hours = now.getHours();
+                              var minutes = now.getMinutes();
+                              var seconds = now.getSeconds();
+                              var timeString = hours.toString().padStart(2, "0") + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
+                              document.getElementById("clock1").innerHTML = timeString;
+                            }
+                          
+                            setInterval(updateClock, 1000);
+                          </script>
+                        <Button class="button d-flex align-items-center justify-content-center mx-4 fs-5 text-white" style="width: 130px; height: 60px; background-color: #0d6efd; border-radius: 10px; cursor: pointer; border: none">DETENCIÓN</Button>
+                        <div class="d-flex align-items-center justify-content-center mx-4" id="clock2" style="width: 130px; height: 60px; background-color: rgb(85, 85, 85); border-radius: 10px; color: white; font-size: 20px;">
+                            <p class="mb-0"></p>
+                        </div>
+                        <script>
+                            function updateClock() {
+                              var now = new Date();
+                              var hours = now.getHours();
+                              var minutes = now.getMinutes();
+                              var seconds = now.getSeconds();
+                              var timeString = hours.toString().padStart(2, "0") + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
+                              document.getElementById("clock2").innerHTML = timeString;
+                            }
+                          
+                            setInterval(updateClock, 1000);
+                          </script>
+                        <Button class="button d-flex align-items-center justify-content-center mx-4 fs-5 text-white" style="width: 130px; height: 60px; background-color: #0d6efd; border-radius: 10px; cursor: pointer; border: none">ARRANQUE</Button>
+                    </div>
                 </div>
-                <button class="button d-flex align-items-center justify-content-center mx-4" style="width: 130px; height: 60px; background-color: #0d6efd; border-radius: 10px; cursor: pointer; border: none">
-                    <span class="fs-5 text-white">DETENCIÓN</span>
-                </button>
-
-                <div class="d-flex align-items-center justify-content-center mx-4" style="width: 130px; height: 60px; background-color: rgb(85, 85, 85); border-radius: 10px;">
-                    <p class="text-white mb-0 fs-5">HORA</p>
-                </div>
-                <button class="button d-flex align-items-center justify-content-center mx-4" style="width: 130px; height: 60px; background-color: #0d6efd; border-radius: 10px; cursor: pointer; border: none;">
-                    <span class="fs-5 text-white">ARRANQUE</span>
-                </button>
-            </div>
+                <label class="fs-5 text-dark ms-4">NOTA</label>   
+                <textarea class="d-block border mt-1 border-1 border-dark fs-6 text-dark ms-4" style="border-radius: 10px; background-color: rgba(255, 255, 255, 0.726); width: 50%; height: auto;" required></textarea></textarea>
+            </form>
         </div>
         <div class="w-30 mt-4 mx-3 p-3 border border-1 border-dark" style="border-radius: 10px; background-color: rgba(247, 143, 143, 0.726);">
             <div>
@@ -105,9 +134,21 @@
             <div class="w-50 mt-5 mb-3">
             </div>
             <div class="d-flex justify-content-center w-50 mt-5 mb-3">
-                <div class="d-flex align-items-center justify-content-center mx-4" style="width: 250px; height: 100px; background-color: rgb(85, 85, 85); border-radius: 10px;">
-                    <p class="text-white mb-0 fs-5">HORA</p>
+                <div class="d-flex align-items-center justify-content-center mx-4" id="clock" style="width: 250px; height: 100px; background-color: rgb(85, 85, 85); border-radius: 10px; color: white; font-size: 25px;">
+                    <p class="mb-0"></p>
                 </div>
+                <script>
+                    function updateClock() {
+                      var now = new Date();
+                      var hours = now.getHours();
+                      var minutes = now.getMinutes();
+                      var seconds = now.getSeconds();
+                      var timeString = hours.toString().padStart(2, "0") + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
+                      document.getElementById("clock").innerHTML = timeString;
+                    }
+                  
+                    setInterval(updateClock, 1000);
+                  </script>
                 <button class="button d-flex align-items-center justify-content-center mx-4" style="width: 250px; height: 100px; background-color: #0d6efd; border-radius: 10px; cursor: pointer; border: none;">
                     <span class="fs-5 text-white">TABLERO PRINCIPAL</span>
                 </button>
