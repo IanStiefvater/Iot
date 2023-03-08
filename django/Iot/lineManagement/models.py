@@ -13,6 +13,12 @@ class devices (models.Model):
     dataType = models.CharField(max_length=200)
 
 
+class lines (models.Model):
+    amountDevice = models.IntegerField()
+    name = models.CharField(max_length=200)
+    dataType = models.CharField(max_length=200)
+
+
 class device_status(models.Model):
     deviceId = models.ForeignKey(devices, on_delete=models.CASCADE)
     shift = models.CharField(max_length=200)

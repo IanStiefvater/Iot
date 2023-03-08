@@ -43,17 +43,38 @@
                 </div>
                    
                {% for i in "x"|ljust:lines %}
-
+               {% for a in namelines %}
                <div class="row mt-5">
                 <div class="col-6">
-                    <input type="text" name="username"  value="{{name}}" disabled class="form-control" id="floatingInput" placeholder="{{name}}">
+                    <input type="text" name="line1"  value="{{a}}" disabled class="form-control" id="floatingInput" placeholder="{{name}}">
                 </div>
                 <div class="col-6">
-                    <input type="text" name="username"  value="{{turno}}" disabled class="form-control" id="floatingInput" placeholder="{{name}}">
+                    <input type="text" name="status"  value="on line" disabled class="form-control" id="floatingInput" placeholder="{{name}}">
                 </div>
                 </div>
-            </div>
+
                 
+
+                <div class="container">
+                    <div class="row">
+                        
+                        {% for nameLine, amount in devices.items %}
+                        <div class="col">
+                            <form action="" class="card">
+                              
+                                <div>hola</div>
+                            
+                            
+                            </form>
+                        </div>
+                    {% endfor %}
+                    
+                       
+                      
+                    </div>
+                  </div>
+            </div>
+            {% endfor %}
                  {% endfor %}
                                 
 
