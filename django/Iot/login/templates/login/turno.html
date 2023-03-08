@@ -34,14 +34,14 @@
                             <label for="floatingInput">Responsable de :</label>
                             <input type="text"  disabled class="form-control" id="floatingInput" placeholder="{{name}}">
                           </div>
-                          <div class="btn-group d-flex justify-content-center" role="group" aria-label="Basic checkbox toggle button group">
+                          <div class="d-flex justify-content-center" role="group" aria-label="Basic checkbox toggle button group">
                             <div class="row flex-column w-300">
                                 {% for line in ""|ljust:num_lines %}
                                 {% with line_num=forloop.counter0 %}
                                 {% comment %} Agregar 1 al número de línea dentro del loop {% endcomment %}
                                 {% with line_num_plus_one=line_num|add:1 %}
                                 <div class=" mb-3  w-200 " >
-                                  <input type="checkbox" class="btn-check " name="lines[]" value="linea {{ line_num_plus_one }}" id="btncheck{{ line_num_plus_one }}" autocomplete="off">
+                                  <input type="checkbox" class="btn-check  btn-lg" name="lines[]" value="linea {{ line_num_plus_one }}" id="btncheck{{ line_num_plus_one }}" autocomplete="off">
                                   <label class="btn btn-outline-primary w-40 h-100" for="btncheck{{ line_num_plus_one }}">Linea {{ line_num_plus_one }}</label>
                                 </div>
                                 {% endwith %}

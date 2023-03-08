@@ -3,9 +3,13 @@ from django.contrib.auth.hashers import make_password
 # Create your views here.
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.db import connection
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from .models import user as loginUser
+from lineManagement.models import config
+
 
 from django.utils import timezone
 
@@ -20,7 +24,13 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('shift')  # redirigir a la proxima pagina
+            request.session["userid"] = user.id
+            u = loginUser(name=user.username, email=user.email, iduser=user.id)
+            u.save()
+
+            # redirigir a la proxima pagina
+            return redirect("shift")
+
         else:
             messages.success(
                 request, ("Credenciales incorrectas"))
@@ -34,6 +44,7 @@ def start_shift(request):
     if request.method == "POST":
         username = request.POST.get("username")
         shift = request.POST.get("turno")
+        request.session['turno'] = shift
         line = request.POST.getlist("lines[]")
         if shift is not None and line:
             # print(shift, line)
@@ -46,8 +57,15 @@ def start_shift(request):
 
             # Handle missing keys
             pass
-        redirect("shift")  # aca rederigimos a los del ian
+        # aca rederigimos a los del ian
+        return redirect("../../linemanagement/home")
 
-    name = "Matias Valdivieso"
-    num_lines = 4
+    iduser = request.session.get('userid')
+
+    responsable = loginUser.objects.filter(iduser=iduser).first()
+
+    name = responsable.name
+
+    num_lines = config.objects.get(id=1).numLines
+    request.session['lines'] = num_lines
     return render(request, "login/turno.html", {"name": name, "num_lines": num_lines})

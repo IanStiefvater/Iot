@@ -6,3 +6,4 @@ class user (models.Model):
     password = models.CharField(max_length=255)
     email = models.CharField(max_length=255)
     name = models.CharField(max_length=200)
+    iduser = models.IntegerField(default=0)
