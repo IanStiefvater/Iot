@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .models import user as loginUser
+from .models import config, lines, devices as odevice
 
 
 def control(request):
@@ -7,11 +8,26 @@ def control(request):
     iduser = request.session.get('userid')
     responsable = loginUser.objects.filter(iduser=iduser).first()
     name = responsable.name
-    lines = 1  # request.session.get('lines')
+    lineas = request.session.get('lines')
     nameLines = request.session.get('namelines', [])
-    print(nameLines)
 
-    return render(request, "lineManagement/control.html", {'turno': turno, "name": name, "lines": lines, "namelines": nameLines})
+    results = lines.objects.all()
+
+    devices = {}
+
+    for line in results:
+        devices[line.name] = line.amountDevice
+
+    device_names = {}
+    for line in set(device.line for device in odevice.objects.all()):
+
+        device_names[line] = {}
+        for device in odevice.objects.filter(line=line):
+            device_names[line][device.name] = device.id
+    print("------")
+    print(device_names)
+    print("------")
+    return render(request, "lineManagement/control.html", {'turno': turno, "name": name, "lineas": lineas, "namelines": nameLines, "devices": devices, "nameDevices": device_names})
 
 
 def maintenance(request):
