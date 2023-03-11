@@ -1,3 +1,7 @@
+
+{% load filter %}
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -42,40 +46,46 @@
                     </div>
                 </div>
                 
-               {% for line in namelines %}
-               <div class="row mt-5 py-5 card mx-5" >
-                   <div class="col-6">
-                       <input type="text" name="line[]" value="{{line}}" disabled class="form-control" id="floatingInput" placeholder="{{name}}">
-                   </div>
-                   <div class="col-6 mt-3">
-                       <input type="text" name="status" value="on line" disabled class="form-control" id="floatingInput" placeholder="{{name}}">
-                   </div>
-               
-               <div class="container">
-                   <div class="row mt-5">
+                {% for line in namelines %}
+                <div class="row mt-5 py-5 card mx-5">
+                  <div class="col-6">
+                    <input type="text" name="line[]" value="{{ line }}" disabled class="form-control" id="floatingInput" placeholder="{{ name }}">
+                  </div>
+                  <div class="col-6 mt-3">
+                    <input type="text" name="status" value="on line" disabled class="form-control" id="floatingInput" placeholder="{{ name }}">
+                  </div>
+                </div>
+                <div class="container">
+                  <div class="row mt-5">
                     {% for device_name, device_count in devices.items %}
-                    {% if device_name == line %}
-                        {% with count=0 %}
-                            <div class="row">
-                                {% for i in "x"|ljust:device_count %}
-                                    <div class="col">
-                                        <form action="" class="card">
-                                            <div>
-                                                <p>hola</p>
-                                                {% for device_name, device_id in nameDevices.linea1.items %}
-                                                    {{ device_name }}: {{ device_id }}
-                                                {% endfor %}
-                                            </div>
-                                        </form>
-                                    </div>
-                                    {% with count=count|add:1 %}
-                                    {% endwith %}
-                                {% endfor %}
+                      {% if device_name == line %}
+                        <div class="row">
+                          {% for i in "x"|ljust:device_count %}
+                            <div class="col">
+                              <form action="" class="card">
+                                <div>
+                                  <p>hola </p>
+                                {% with counter=forloop.counter|stringformat:"s"|add:0 %}
+
+                                  {{line}} <p>hola </p> {{counter}}
+                                  {{nameDevices|get_item:line|get_item:counter}}
+                                  <p>{{ devices|get_item:line}} - Device {{ counter }}</p>
+
+                                    - Device {{ counter }}</p>
+                                  {{ forloop.counter }}
+                                 
+                                  {% endwith %}
+                                </div>
+                              </form>
                             </div>
-                        {% endwith %}
-                    {% endif %}
-                {% endfor %}
-                {% endfor %}
+                          {% endfor %}
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endfor %}
+              
                 
                 
            

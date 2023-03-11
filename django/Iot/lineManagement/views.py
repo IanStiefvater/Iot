@@ -1,9 +1,13 @@
+from datetime import date
 from django.shortcuts import render
 from .models import user as loginUser
-from .models import config, lines, devices as odevice
+from .models import config, lines, devices as odevice, device_maintance
+import jinja2
 
 
 def control(request):
+   
+
     turno = request.session.get('turno')
     iduser = request.session.get('userid')
     responsable = loginUser.objects.filter(iduser=iduser).first()
@@ -19,17 +23,26 @@ def control(request):
         devices[line.name] = line.amountDevice
 
     device_names = {}
+  
+
+# Obtener las líneas únicas de la base de datos de dispositivos
     for line in set(device.line for device in odevice.objects.all()):
 
+    # Crear un diccionario para almacenar los nombres de los dispositivos en esta línea
         device_names[line] = {}
-        for device in odevice.objects.filter(line=line):
-            device_names[line][device.name] = device.id
-    print("------")
+
+    # Filtrar los dispositivos por línea y almacenar sus nombres e ids en el diccionario
+    for device in odevice.objects.filter(line=line):
+         device_names[line][device.id] = device.name
+    
     print(device_names)
     print("------")
     return render(request, "lineManagement/control.html", {'turno': turno, "name": name, "lineas": lineas, "namelines": nameLines, "devices": devices, "nameDevices": device_names})
 
 
 def maintenance(request):
+    notes= device_maintance.objects.filter( starTime=date.today())
+    print(notes)
+    print(date.today)
 
     return render(request, "lineManagement/maintenance.html", {})
