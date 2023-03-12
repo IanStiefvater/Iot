@@ -7,10 +7,13 @@ from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db import connection
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+
 from .models import user as loginUser
 from lineManagement.models import config, lines
-from lineManagement.models import device_maintance 
+from lineManagement.models import device_maintance , line_status
+from django.contrib.auth.hashers import make_password
+
+
 
 
 
@@ -20,6 +23,7 @@ timezone.activate('America/Argentina/Buenos_Aires')
 
 
 def login_user(request):
+    
    
 
     if request.method == "POST":
@@ -61,10 +65,12 @@ def start_shift(request):
                 for line in line:
 
                     d = lines.objects.get(name=line)
+                    userid= loginUser.objects.get(iduser= request.session.get('userid'))
                     linea.append(d.name)
-                    cursor.execute(
-                        "INSERT INTO linemanagement_line_status (lineName, shift,userId_id,starTime, amountDevices) VALUES (%s, %s,%s,%s,%s)", (line, shift, 1, timezone.now(), d.amountDevice
-                                                                                                                                                ))
+                    insertarline= line_status(lineName=line,shift=shift,starTime=timezone.now(),amountDevices= d.amountDevice, userId=userid)
+                    insertarline.save()
+                    
+                                                                                                                                               
             request.session['namelines'] = linea
         else:
 

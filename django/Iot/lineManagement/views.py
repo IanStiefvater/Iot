@@ -1,7 +1,7 @@
 from datetime import date
 from django.shortcuts import render
-from .models import user as loginUser
-from .models import config, lines, devices as odevice, device_maintance
+from login.models import user as loginUser
+from .models import config, lines, devices as odevice, device_maintance, line_status
 import jinja2
 
 
@@ -17,6 +17,17 @@ def control(request):
 
     results = lines.objects.all()
 
+    status ={}
+
+    for a in nameLines:
+         print(a)
+         lineprueba= line_status.objects.filter(lineName=a ).first()
+         print("xd",lineprueba.status)
+         status[a]= lineprueba.status
+     
+    print(status)
+    
+    
     devices = {}
 
     for line in results:
@@ -32,8 +43,13 @@ def control(request):
         device_names[line] = {}
 
     # Filtrar los dispositivos por línea y almacenar sus nombres e ids en el diccionario
-    for device in odevice.objects.filter(line=line):
-         device_names[line][device.id] = device.name
+    
+  
+        for device in odevice.objects.filter(line=line):
+           device_names[line][device.deviceId] = device.name
+           
+           
+           
     
     print(device_names)
     print("------")

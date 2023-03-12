@@ -52,10 +52,10 @@ class line_status (models.Model):
     shift = models.CharField(max_length=200)
     userId = models.ForeignKey(user, on_delete=models.CASCADE)
     starTime = models.DateTimeField(default=timezone.now)
-    endTime = models.DateTimeField(default=0)
-    status = models.BooleanField(default=1)
+    endTime = models.DateTimeField(null=True,default=None)
+    status = models.CharField(max_length=255, default='activo')
     timeMaintance = models.TimeField(
-        auto_now=False, auto_now_add=False)
+        auto_now=False, auto_now_add=False, null=True,default=None)
     notes = models.TextField()
 
 
