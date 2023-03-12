@@ -31,8 +31,8 @@
             </div>
         </nav>
     </header>
-            <div class="card">
-                <div class="row">
+            <div class="card mt-3 py-3 px-5  col-11 mx-auto">
+                <div class="row mx-5 mt-3">
                     <div class="col-6">
                         <input type="text" name="username"  value="{{name}}" disabled class="form-control" id="floatingInput" placeholder="{{name}}">
                     </div>
@@ -41,20 +41,90 @@
                     </div>
                     </div>
                 </div>
-                   
-               {% for i in "x"|ljust:lines %}
-
-               <div class="row mt-5">
-                <div class="col-6">
-                    <input type="text" name="username"  value="{{name}}" disabled class="form-control" id="floatingInput" placeholder="{{name}}">
-                </div>
-                <div class="col-6">
-                    <input type="text" name="username"  value="{{turno}}" disabled class="form-control" id="floatingInput" placeholder="{{name}}">
-                </div>
-                </div>
-            </div>
                 
-                 {% endfor %}
+               {% for line in namelines %}
+               <div class="row mt-5 py-5 card mx-5" >
+                   <div class="col-6">
+                       <input type="text" name="line[]" value="{{line}}" disabled class="form-control" id="floatingInput" placeholder="{{name}}">
+                   </div>
+                   <div class="col-6 mt-3">
+                       <input type="text" name="status" value="on line" disabled class="form-control" id="floatingInput" placeholder="{{name}}">
+                   </div>
+               
+               <div class="container">
+                   <div class="row mt-5">
+                    {% for device_name, device_count in devices.items %}
+                    {% if device_name == line %}
+                        {% with count=0 %}
+                            <div class="row">
+                                {% for i in "x"|ljust:device_count %}
+                                    <div class="col">
+                                        <form action="" class="card">
+                                            <div>
+                                                <p>hola</p>
+                                                {% for device_name, device_id in nameDevices.linea1.items %}
+                                                    {{ device_name }}: {{ device_id }}
+                                                {% endfor %}
+                                            </div>
+                                        </form>
+                                    </div>
+                                    {% with count=count|add:1 %}
+                                    {% endwith %}
+                                {% endfor %}
+                            </div>
+                        {% endwith %}
+                    {% endif %}
+                {% endfor %}
+                {% endfor %}
+                
+                
+           
+
+
+            <div class="card">
+                <div class="row mx-5 mt-3">
+                    <div class="col-5 ml-1">
+                        <input type="submit" name="username"  value="FIN DE TURNO" disabled class="form-control" id="floatingInput" >
+                    </div>
+                    <div class="col-2 ml-1">
+                        <button class="btn btn-secondary px-4 py-2" id="clock"></button>
+                    </div>
+                    <div class="col-2 m-1">
+                        <input type="text" name="username"  value="{{turno}}" disabled class="form-control" id="floatingInput" placeholder="{{name}}">
+                    </div>
+                    
+                </div>
+
+            </div>
+              
+
+           
+            <script>
+                function updateClock() {
+                  var now = new Date();
+                  var hours = now.getHours();
+                  var minutes = now.getMinutes();
+                  var seconds = now.getSeconds();
+                  var timeString = hours.toString().padStart(2, "0") + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
+                  document.getElementById("clock").innerHTML = timeString;
+                }
+              
+                setInterval(updateClock, 1000);
+              </script>
+
+              <script>
+                $(function() {
+                    $('device-search').on('input', function() {
+                        var query = $(this).val();
+                        $.getJSON('/search_products/' + query, function(data) {
+                            $('#search-results').empty();
+                            $.each(data, function(index, product) {
+                                $('<li>').text(product.name + ': $' + product.price).appendTo('#search-results');
+                            });
+                        });
+                    });
+                });
+              </script>
                                 
 
 

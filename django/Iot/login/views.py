@@ -8,7 +8,7 @@ from django.db import connection
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import user as loginUser
-from lineManagement.models import config
+from lineManagement.models import config, lines
 
 
 from django.utils import timezone
@@ -47,12 +47,18 @@ def start_shift(request):
         request.session['turno'] = shift
         line = request.POST.getlist("lines[]")
         if shift is not None and line:
+
             # print(shift, line)
             with connection.cursor() as cursor:
-                for lines in line:
-                    cursor.execute(
-                        "INSERT INTO linemanagement_line_status (lineName, shift,userId_id,starTime) VALUES (%s, %s,%s,%s)", (lines, shift, 3, timezone.now()))
+                linea = []
+                for line in line:
 
+                    d = lines.objects.get(name=line)
+                    linea.append(d.name)
+                    cursor.execute(
+                        "INSERT INTO linemanagement_line_status (lineName, shift,userId_id,starTime, amountDevices) VALUES (%s, %s,%s,%s,%s)", (line, shift, 3, timezone.now(), d.amountDevice
+                                                                                                                                                ))
+            request.session['namelines'] = linea
         else:
 
             # Handle missing keys
