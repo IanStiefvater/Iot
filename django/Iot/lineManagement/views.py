@@ -1,5 +1,9 @@
 from django.shortcuts import render
 from .models import user as loginUser
+from .models import device_maintance
+from datetime import date, timezone
+from django.http import HttpResponse    
+from .models import lines_maintance, device_maintance
 
 
 def control(request):
@@ -13,5 +17,16 @@ def control(request):
 
 
 def maintenance(request):
+    if request.method == "POST":
+        option = request.POST['options']
+        notas = request.POST['notas']   
+        lineproduction = request.POST['lineproduction'] 
+        blocks = request.POST['blocks']
+        lines = lines_maintance(deviceid= 1, point= option, notes= notas, starTime= timezone.now())
+        lines.save()
 
-    return render(request, "lineManagement/maintenance.html", {})
+    
+
+    notes = device_maintance.objects.all()
+    return render(request, "lineManagement/maintenance.html", {'notes': notes})
+

@@ -57,28 +57,33 @@
     </header>
     <main class="h-100">
         <h1 class="pt-5 ms-3">Mantenimiento</h1>
-        <div class="py-5 d-flex justify-content-center">
-            <div class="d-flex mx-auto flex-column w-50 justify-content-center align-items-center">
-              <div class="d-flex my-3 align-items-center" style="height: 100px; width: 300px; border-radius: 15px; background-color: rgb(187, 187, 187);">
-                <p class="ms-3 mb-0 fs-4" style="color: rgb(80, 80, 80) ;">Name: Usuario</p>
-              </div>
-              <div class="d-flex my-3 align-items-center" style="height: 100px; width: 300px; border-radius: 15px; background-color: rgb(187, 187, 187);">
-                <p class="ms-3 mb-0 fs-4" style="color: rgb(80, 80, 80) ;">Linea de Producción 1</p>
-              </div>
-              <div class="d-flex my-3 align-items-center" style="height: 100px; width: 300px; border-radius: 15px; background-color: rgb(187, 187, 187);">
-                <p class="ms-3 mb-0 fs-4" style="color: rgb(80, 80, 80) ;">Block 5 / Vestido</p>
-              </div>
+        <form method="post" action="">
+            <div class="py-5 d-flex justify-content-center">
+                <div class="d-flex mx-auto flex-column w-50 justify-content-center align-items-center">
+                <div class="d-flex my-3 align-items-center" style="height: 100px; width: 300px; border-radius: 15px; background-color: rgb(187, 187, 187);">
+                    <p class="ms-3 mb-0 fs-4" style="color: rgb(80, 80, 80) ;"> USER </p>
+                </div>
+                <div class="d-flex my-3 align-items-center" style="height: 100px; width: 300px; border-radius: 15px; background-color: rgb(187, 187, 187);">
+                    <input name="lineproduction" class="ms-3 mb-0 fs-4" style="color: rgb(80, 80, 80) ;" value="Linea de producción 1" disabled>
+                </div>
+                <div class="d-flex my-3 align-items-center" style="height: 100px; width: 300px; border-radius: 15px; background-color: rgb(187, 187, 187);">
+                    <select name="blocks">
+                        <option class="ms-3 mb-0 fs-4" style="color: rgb(80, 80, 80) ;">BLOCKE 1</option>
+                        <option class="ms-3 mb-0 fs-4" style="color: rgb(80, 80, 80) ;">BLOCKE 2</option>
+                        <option class="ms-3 mb-0 fs-4" style="color: rgb(80, 80, 80) ;">BLOCKE 3</option>
+                    </select>
+                </div>
+                </div>
+                <div class="d-flex flex-grow-1 w-50 justify-content-center">
+                <div class="d-flex align-items-center bg-primary my-3" style="height: 100px; width: 450px; border-radius: 15px; background-color: #0d6efd;">
+                    <p class="ms-3 mb-0 fs-4" style="color: rgb(255, 255, 255);"> TURNO </p>
+                </div>
+                </div>
             </div>
-            <div class="d-flex flex-grow-1 w-50 justify-content-center">
-              <div class="d-flex align-items-center bg-primary my-3" style="height: 100px; width: 450px; border-radius: 15px; background-color: #0d6efd;">
-                <p class="ms-3 mb-0 fs-4" style="color: rgb(255, 255, 255);">Turno 1</p>
-              </div>
-            </div>
-        </div>
-        <div class="w-30 mx-3 p-3 border border-1 border-dark" style="border-radius: 10px;">
-            <form>
+            <div class="w-30 mx-3 p-3 border border-1 border-dark" style="border-radius: 10px;">
+                {% csrf_token %}
                 <div class="d-flex align-items-center justify-content-between my-4">
-                    <select size="3" class=" lista">
+                    <select size="3" class=" lista" required>
                         <input type="radio" name="options" value="option1" style="width: 20px; height: 20px;">
                         <label for="option1" class="fs-5">Set Up</label><br>
                         <input type="radio" name="options" value="option2" style="width: 20px; height: 20px;">
@@ -87,47 +92,33 @@
                         <label for="option3" class="fs-5">Imprevisto</label>
                     </select>
                     <div class="d-flex">
-                        <div class="d-flex align-items-center justify-content-center mx-4" id="clock1" style="width: 130px; height: 60px; background-color: rgb(85, 85, 85); border-radius: 10px; color: white; font-size: 20px;">
-                            <p class="mb-0"></p>
-                        </div>
-                        <script>
-                            function updateClock() {
-                              var now = new Date();
-                              var hours = now.getHours();
-                              var minutes = now.getMinutes();
-                              var seconds = now.getSeconds();
-                              var timeString = hours.toString().padStart(2, "0") + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
-                              document.getElementById("clock1").innerHTML = timeString;
-                            }
-                          
-                            setInterval(updateClock, 1000);
-                          </script>
-                        <Button class="button d-flex align-items-center justify-content-center mx-4 fs-5 text-white" style="width: 130px; height: 60px; background-color: #0d6efd; border-radius: 10px; cursor: pointer; border: none">DETENCIÓN</Button>
-                        <div class="d-flex align-items-center justify-content-center mx-4" id="clock2" style="width: 130px; height: 60px; background-color: rgb(85, 85, 85); border-radius: 10px; color: white; font-size: 20px;">
-                            <p class="mb-0"></p>
-                        </div>
-                        <script>
-                            function updateClock() {
-                              var now = new Date();
-                              var hours = now.getHours();
-                              var minutes = now.getMinutes();
-                              var seconds = now.getSeconds();
-                              var timeString = hours.toString().padStart(2, "0") + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
-                              document.getElementById("clock2").innerHTML = timeString;
-                            }
-                          
-                            setInterval(updateClock, 1000);
-                          </script>
-                        <Button class="button d-flex align-items-center justify-content-center mx-4 fs-5 text-white" style="width: 130px; height: 60px; background-color: #0d6efd; border-radius: 10px; cursor: pointer; border: none">ARRANQUE</Button>
+                        <label class="fs-5 text-dark ms-4">NOTA</label>   
+                        <textarea name="notas" class="d-block border mt-1 border-1 border-dark fs-6 text-dark ms-4" style="border-radius: 10px; background-color: rgba(255, 255, 255, 0.726); width: 50%; height: auto;" required></textarea></textarea>        
                     </div>
                 </div>
-                <label class="fs-5 text-dark ms-4">NOTA</label>   
-                <textarea class="d-block border mt-1 border-1 border-dark fs-6 text-dark ms-4" style="border-radius: 10px; background-color: rgba(255, 255, 255, 0.726); width: 50%; height: auto;" required></textarea></textarea>
-            </form>
-        </div>
+                <div class="d-flex">
+                    <div class="d-flex align-items-center justify-content-center mx-4" style="width: 130px; height: 60px; background-color: rgb(85, 85, 85); border-radius: 10px; color: white; font-size: 20px;">
+                        <p class="mb-0"></p>
+                    </div>
+                    <input type="radio" value= "DETENCIÓN" class="button d-flex align-items-center justify-content-center mx-4 fs-5 text-white" style="width: 130px; height: 60px; background-color: #0d6efd; border-radius: 10px; cursor: pointer; border: none">
+                    <div class="d-flex align-items-center justify-content-center mx-4" style="width: 130px; height: 60px; background-color: rgb(85, 85, 85); border-radius: 10px; color: white; font-size: 20px;">
+                        <p class="mb-0"></p>
+                    </div>
+                    <input type="radio" value= "ARRANQUE" class="button d-flex align-items-center justify-content-center mx-4 fs-5 text-white" style="width: 130px; height: 60px; background-color: #0d6efd; border-radius: 10px; cursor: pointer; border: none">                    
+                </div>
+            </div>
+            <div>
+                <input type="submit">
+            </div>
+        </form>
         <div class="w-30 mt-4 mx-3 p-3 border border-1 border-dark" style="border-radius: 10px; background-color: rgba(247, 143, 143, 0.726);">
             <div>
                 <h3 class="fs-6 text-dark">DATOS HISTÓRICOS</h3>
+                {% for issue in notes %}
+                    <div>
+                        <p>{{ issue.starTime|time:"H:i:s" }} - {{ issue.endTime|time:"H:i:s" }} : {{ issue.notes }}</p>
+                    </div>
+                {% endfor %}
             </div>
         </div>
         <div class="d-flex mt-5 mb-5">
