@@ -54,7 +54,7 @@
                     <input type="text" name="line[]" value="{{ line }}" disabled class="form-control" id="floatingInput" placeholder="{{ name }}">
                   </div>
                   <div class="col-6 mt-3">
-                    <input type="text" name="status" value="on line" disabled class="form-control" id="floatingInput" placeholder="{{ name }}">
+                    <input type="text" name="status" value="{{status|get_item:line}}" disabled class="form-control" id="floatingInput" placeholder="{{ name }}">
                   </div>
                 </div>
                 
@@ -101,7 +101,9 @@
                     
                     <div class="col-5 ml-1">
                         <form action="" method="POST">
-                        <input type="submit" name=""  value="FIN DE TURNO" disabled class="form-control  btn  btn-primary" id="floatingInput" >
+                          {% csrf_token %}
+                        <input value{{turno}} name="turno" class="d-none">
+                        <input type="submit"   value="FIN DE TURNO" class="form-control  btn  btn-primary" id="floatingInput" >
                         <form>
                     </div>
                   

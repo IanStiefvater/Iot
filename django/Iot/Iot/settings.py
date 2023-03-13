@@ -53,21 +53,15 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'Iot.urls'
 
 TEMPLATES = [
-    
-    
-     {
-        'BACKEND': 'django.template.backends.jinja2.Jinja2',
-        'APP_DIRS': True,
-        'OPTIONS': {
-            # ... opciones adicionales aquí ...
-        },
-    },
-   {
-        'BACKEND':'django.template.backends.django.DjangoTemplates',
+
+
+
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
-        
+
             'context_processors': [
                 'django.template.context_processors.i18n',
                 'django.template.context_processors.media',
@@ -80,7 +74,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
         },
-   }
+    }
 ]
 
 WSGI_APPLICATION = 'Iot.wsgi.application'

@@ -10,11 +10,8 @@ from django.contrib.auth.decorators import login_required
 
 from .models import user as loginUser
 from lineManagement.models import config, lines
-from lineManagement.models import device_maintance , line_status
+from lineManagement.models import device_maintance, line_status
 from django.contrib.auth.hashers import make_password
-
-
-
 
 
 from django.utils import timezone
@@ -23,11 +20,8 @@ timezone.activate('America/Argentina/Buenos_Aires')
 
 
 def login_user(request):
-    
-   
 
     if request.method == "POST":
-      
 
         username = request.POST['username']
         password = request.POST['password']
@@ -65,12 +59,13 @@ def start_shift(request):
                 for line in line:
 
                     d = lines.objects.get(name=line)
-                    userid= loginUser.objects.get(iduser= request.session.get('userid'))
+                    userid = loginUser.objects.filter(
+                        iduser=request.session.get('userid')).first()
                     linea.append(d.name)
-                    insertarline= line_status(lineName=line,shift=shift,starTime=timezone.now(),amountDevices= d.amountDevice, userId=userid)
+                    insertarline = line_status(lineName=line, shift=shift, starTime=timezone.now(
+                    ), amountDevices=d.amountDevice, userId=userid)
                     insertarline.save()
-                    
-                                                                                                                                               
+
             request.session['namelines'] = linea
         else:
 
