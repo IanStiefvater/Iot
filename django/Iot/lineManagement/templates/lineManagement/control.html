@@ -1,3 +1,7 @@
+
+{% load filter %}
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -37,59 +41,76 @@
                         <input type="text" name="username"  value="{{name}}" disabled class="form-control" id="floatingInput" placeholder="{{name}}">
                     </div>
                     <div class="col-6">
-                        <input type="text" name="username"  value="{{turno}}" disabled class="form-control" id="floatingInput" placeholder="{{name}}">
+                        <input type="text" name="username"  value="{{turno}}" disabled class="form-control btn  btn-primary" id="floatingInput" placeholder="{{name}}">
                     </div>
                     </div>
                 </div>
                 
-               {% for line in namelines %}
-               <div class="row mt-5 py-5 card mx-5" >
-                   <div class="col-6">
-                       <input type="text" name="line[]" value="{{line}}" disabled class="form-control" id="floatingInput" placeholder="{{name}}">
-                   </div>
-                   <div class="col-6 mt-3">
-                       <input type="text" name="status" value="on line" disabled class="form-control" id="floatingInput" placeholder="{{name}}">
-                   </div>
-               
-               <div class="container">
-                   <div class="row mt-5">
+                {% for line in namelines %}
+                <div class="row mt-5 py-5 card mx-5">
+
+                    <div class="row">
+                  <div class="col-6 mt-3">
+                    <input type="text" name="line[]" value="{{ line }}" disabled class="form-control" id="floatingInput" placeholder="{{ name }}">
+                  </div>
+                  <div class="col-6 mt-3">
+                    <input type="text" name="status" value="{{status|get_item:line}}" disabled class="form-control" id="floatingInput" placeholder="{{ name }}">
+                  </div>
+                </div>
+                
+                <div class="container">
+                  <div class="row mt-5">
                     {% for device_name, device_count in devices.items %}
-                    {% if device_name == line %}
-                        {% with count=0 %}
-                            <div class="row">
-                                {% for i in "x"|ljust:device_count %}
-                                    <div class="col">
-                                        <form action="" class="card">
-                                            <div>
-                                                <p>hola</p>
-                                                {% for device_name, device_id in nameDevices.linea1.items %}
-                                                    {{ device_name }}: {{ device_id }}
-                                                {% endfor %}
-                                            </div>
-                                        </form>
-                                    </div>
-                                    {% with count=count|add:1 %}
-                                    {% endwith %}
-                                {% endfor %}
+                      {% if device_name == line %}
+                        <div class="row">
+                          {% for i in "x"|ljust:device_count %}
+                            <div class="col-auto  mx-auto">
+                              <form action="" class="card">
+                                <div class="row mt-5">
+                                  
+                                {% with counter=forloop.counter|stringformat:"s"|add:0 %}
+
+                                 
+                                <p class="text-center"> DISPOSITIVO {{ counter }}</p>
+                                <p class="text-center">  {{nameDevices|get_item:line|get_item:counter}}</p>
+                               
+
+                                
+                                 
+                                  {% endwith %}
+                                </div>
+                              </form>
+                              
                             </div>
-                        {% endwith %}
-                    {% endif %}
-                {% endfor %}
-                {% endfor %}
+                          {% endfor %}
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+              
                 
                 
            
 
 
-            <div class="card">
+            <div class="card mt-5 mx-5 py-3 px-3">
                 <div class="row mx-5 mt-3">
+                    
                     <div class="col-5 ml-1">
-                        <input type="submit" name="username"  value="FIN DE TURNO" disabled class="form-control" id="floatingInput" >
+                        <form action="" method="POST">
+                          {% csrf_token %}
+                        <input value{{turno}} name="turno" class="d-none">
+                        <input type="submit"   value="FIN DE TURNO" class="form-control  btn  btn-primary" id="floatingInput" >
+                        <form>
                     </div>
+                  
                     <div class="col-2 ml-1">
                         <button class="btn btn-secondary px-4 py-2" id="clock"></button>
                     </div>
-                    <div class="col-2 m-1">
+                    <div class="col-3 mx-5">
                         <input type="text" name="username"  value="{{turno}}" disabled class="form-control" id="floatingInput" placeholder="{{name}}">
                     </div>
                     

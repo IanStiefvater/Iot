@@ -1,3 +1,4 @@
+from datetime import date
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import make_password
 # Create your views here.
@@ -6,9 +7,11 @@ from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db import connection
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+
 from .models import user as loginUser
 from lineManagement.models import config, lines
+from lineManagement.models import device_maintance, line_status
+from django.contrib.auth.hashers import make_password
 
 
 from django.utils import timezone
@@ -19,8 +22,10 @@ timezone.activate('America/Argentina/Buenos_Aires')
 def login_user(request):
 
     if request.method == "POST":
+
         username = request.POST['username']
         password = request.POST['password']
+        print(password)
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
@@ -54,10 +59,13 @@ def start_shift(request):
                 for line in line:
 
                     d = lines.objects.get(name=line)
+                    userid = loginUser.objects.filter(
+                        iduser=request.session.get('userid')).first()
                     linea.append(d.name)
-                    cursor.execute(
-                        "INSERT INTO linemanagement_line_status (lineName, shift,userId_id,starTime, amountDevices) VALUES (%s, %s,%s,%s,%s)", (line, shift, 3, timezone.now(), d.amountDevice
-                                                                                                                                                ))
+                    insertarline = line_status(lineName=line, shift=shift, starTime=timezone.now(
+                    ), amountDevices=d.amountDevice, userId=userid)
+                    insertarline.save()
+
             request.session['namelines'] = linea
         else:
 
