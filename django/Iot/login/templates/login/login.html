@@ -8,45 +8,51 @@
     <title>Login</title>
 </head>
 <body>
-    <div class="container">
+    <div class="container mt-5">
         <div class="row">
             <div class="col-12 col-md-6 offset-md-3">
-
-                <h1>Ingreso</h1>
-
                 <div class="card">
                     <div class="card-body">
                        <form action="" method=POST>
-                        {% csrf_token %}
+                            <div class="mx-1 my-4">
+                                <h3>Iniciar Sesión</h3>
+                            </div>
+                            {% csrf_token %}
                         
-                            <div class="mb-3">
+                                <div class="mb-3">
 
-                                {% if messages  %}
-                                    {% for message in messages  %}
-                                    <div class="alert alert-warning d-flex align-items-center" role="alert">
-                                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-                                        <div>
-                                        {{message}}
+                                    {% if messages  %}
+                                        {% for message in messages  %}
+                                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                                            <div>
+                                            {{message}}
+                                            </div>
                                         </div>
-                                    </div>
+                                        
                                     
-                                
-                                
-                                    {% endfor %}
-                                {% endif %}
+                                    
+                                        {% endfor %}
+                                    {% endif %}
 
-                              <label for="exampleInputEmail1" class="form-label">Email:</label>
-                              <input type="text" name="username" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-                              
-                            </div>
-                            <div class="mb-3">
-                              <label for="exampleInputPassword1" class="form-label">Contraseña</label>
-                              <input type="password" name="password" class="form-control" id="exampleInputPassword1">
-                            </div>
-                       
-                            
+                                <label for="exampleInputEmail1" class="form-label">Email:</label>
+                                <input type="text" name="username" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                                
+                                </div>
+                                <div class="mb-3">
+                                <label for="exampleInputPassword1" class="form-label">Contraseña</label>
+                                <input type="password" name="password" class="form-control" id="exampleInputPassword1">
+                                </div>
                         
-                        <input type="submit" class="btn btn-success px-4 py-2 mx-3 " value='Ingresar'>
+                                
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                <label class="form-check-label" for="exampleCheck1">Recuerdame</label>
+                            </div>
+                            <input type="submit" class="btn btn-primary px-4 py-2 mx-3 mt-3" value='Ingresar'>
+                            <div class="my-3 mt-5">
+                                <a href="#">¿Olvidaste tu contraseña?</a>
+                            </div>
                        </form>
                     </div>
 

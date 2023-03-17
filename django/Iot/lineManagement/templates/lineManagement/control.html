@@ -48,14 +48,17 @@
                 
                 {% for line in namelines %}
                 <div class="row mt-5 py-5 card mx-5">
-
+  
                     <div class="row">
                   <div class="col-6 mt-3">
                     <input type="text" name="line[]" value="{{ line }}" disabled class="form-control" id="floatingInput" placeholder="{{ name }}">
                   </div>
-                  <div class="col-6 mt-3">
-                    <input type="text" name="status" value="{{status|get_item:line}}" disabled class="form-control" id="floatingInput" placeholder="{{ name }}">
+                  {% if  status|get_item:line == "activo" %}
+                  <div class="col-6 mt-3  card" style="background-color: none; border: none;">
+                    <input type="text" name="status" value="{{status|get_item:line}}" disabled  style="background-color: #077a16bf;" class="col-12 form-control border-0 text-white" id="floatingInput" placeholder="{{ name }}">
                   </div>
+                  {% endif %}
+
                 </div>
                 
                 <div class="container">
@@ -65,20 +68,21 @@
                         <div class="row">
                           {% for i in "x"|ljust:device_count %}
                             <div class="col-auto  mx-auto">
-                              <form action="" class="card">
-                                <div class="row mt-5">
-                                  
-                                {% with counter=forloop.counter|stringformat:"s"|add:0 %}
-
-                                 
-                                <p class="text-center"> DISPOSITIVO {{ counter }}</p>
-                                <p class="text-center">  {{nameDevices|get_item:line|get_item:counter}}</p>
+                              {% if  status|get_item:line == "activo" %}
+                              <form action="" class="card "  style="background-color: #077a16bf;">
                                
-
-                                
-                                 
-                                  {% endwith %}
-                                </div>
+                                  <div class="row mx-2 my-3 " style="font-weight: bolder;">
+                                    
+                                      {% with counter=forloop.counter|stringformat:"s"|add:0 %}
+                                        <a href="./maintenance?device_name={{ nameDevices|get_item:line|get_item:counter }}&line={{ line }}&username={{ name }}&shift={{ turno }}&line_status={{ status|get_item:line }}" target="_self" style="cursor: pointer;" class=" text-dark text-decoration-none">
+                                         
+                                          <p class="text-center mt-1" style=" color: white;"> DISPOSITIVO {{ counter }}</p>
+                                          <p class="text-center" style=" color: white;"> {{nameDevices|get_item:line|get_item:counter}}</p>                              
+                                        </a>
+                                      {% endwith %}
+                                    
+                                  </div>    
+                                  {% endif %}                       
                               </form>
                               
                             </div>
@@ -88,6 +92,7 @@
                     {% endfor %}
                   </div>
                 </div>
+              </div>
               {% endfor %}
             </div>
               

@@ -7,9 +7,9 @@ from django.utils import timezone
 
 
 class devices (models.Model):
-    deviceId = models.IntegerField()
+    deviceId  = models.IntegerField()
     line = models.CharField(max_length=200)
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200) 
     dataType = models.CharField(max_length=200)
 
 
@@ -38,7 +38,7 @@ class lines_maintance (models.Model):
 
 
 class device_maintance (models.Model):
-    deviceID = models.IntegerField()
+    deviceId = models.IntegerField()
     point = models.CharField(max_length=200)
     lineid = models.IntegerField(default=0)
     notes = models.TextField()
