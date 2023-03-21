@@ -14,8 +14,9 @@ from django.http import HttpResponse
 from django.contrib import messages
 
 from login.models import user as loginUser
-from .models import config, lines, devices as odevice, device_maintance, line_status
+from .models import config, lines, devices as odevice, device_maintance, line_status, device_status
 from django.db.models import Q
+from django.db import models
 
 
 def control(request):
@@ -83,10 +84,17 @@ def maintenance(request):
     username = request.GET.get('username')
     shift = request.GET.get('shift')
     line_status = request.GET.get('line_status')
+
     
     # Encuentra el objeto de línea y dispositivo que corresponden a la línea y el nombre del dispositivo
     line_object = lines.objects.filter(name=line).first()
     device_object = odevice.objects.filter(name=device_name).first()
+
+    # Agregar mensajes de depuración
+    if line_object is None:
+        print("Line object is None")
+    if device_object is None:
+        print("Device object is None")
 
     # Obtén los IDs
     line_id = line_object.id
@@ -96,9 +104,9 @@ def maintenance(request):
     print("Line ID:", line_id)
     print("Device ID:", device_id)
 
-    #datos que se envían en el formulario
-    lineId = request.GET.get('line_id')
-    deviceId = request.GET.get('device_id')
+    #los id que obtiene arriba son objetos, aquí abajo se transforman en int para enviarlos a las tablas    
+    lineId = request.POST.get('line_id')
+    deviceId = request.POST.get('device_id')   
 
     if request.method == "POST":
         action = request.POST['action']
@@ -112,25 +120,23 @@ def maintenance(request):
                 messages.error(request, 'Por favor, complete todos los campos antes de seleccionar DETENCIÓN.')
                 return redirect('maintenance')
             #Captura el momento exacto en donde se envía el formulario (horas, minutos, segundos)
-            start_time = datetime.now().strftime("%H:%M:%S")
-
-            lines_maintenance_obj = lines_maintance(lineId=lineId, point=option, notes=notas, starTime=start_time)
+            lines_maintenance_obj = lines_maintance(lineId=lineId, point=option, notes=notas, starTime=timezone.now() )
             lines_maintenance_obj.save()
             request.session['lines_maintenance_id'] = lines_maintenance_obj.id
 
-            device = device_maintance(deviceId=deviceId, point=option, lineid=line_id, notes=notas, starTime=start_time)
+            device = device_maintance(deviceId=deviceId, point=option, lineid=lineId, notes=notas, starTime=timezone.now() )
             device.save()
             #request.session sirve para almacenar y recuperar datos específicos del usuario durante múltiples solicitudes (requests)
             request.session['device_maintenance_id'] = device.id
 
         elif action == 'ARRANQUE':
             # El arranque solo envía el endTime a las tablas, para eso recupera su id que se extranjo de request.session y rellena esa columna vacía que se envía al principío en detención
-            end_time = datetime.now().strftime("%H:%M:%S")
+            end_time = timezone.now() 
             lines_maintenance_id = request.session.get('lines_maintenance_id')
             if lines_maintenance_id:
                 lines_maintenance_obj2 = lines_maintance.objects.filter(id=lines_maintenance_id).first()
                 if lines_maintenance_obj2:
-                    lines_maintenance_obj2.endTime = end_time
+                    lines_maintenance_obj2.endTime = timezone.now()
                     lines_maintenance_obj2.save()
                     del request.session['lines_maintenance_id']
 
