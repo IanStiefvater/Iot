@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.shortcuts import render, redirect
 
 from .models import user as loginUser
-from .models import device_maintance 
+from .models import device_maintance
 from .models import lines_maintance
 from datetime import date, datetime
 from django.utils import timezone
@@ -14,7 +14,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 
 from login.models import user as loginUser
-from .models import config, lines, devices as odevice, device_maintance, line_status, device_status
+from .models import config, lines, devices as odevice, device_maintance, line_status as lstatus, device_status
 from django.db.models import Q
 from django.db import models
 
@@ -27,7 +27,7 @@ def control(request):
             turno = request.POST.get("turno")
             for a in nameLines:
 
-                lineprueba = line_status.objects.filter(
+                lineprueba = lstatus.objects.filter(
                     ~Q(status="inactivo"), lineName=a, endTime__isnull=True).first()
                 lineprueba.status = "inactivo"
                 lineprueba.endTime = timezone.now()
@@ -47,7 +47,7 @@ def control(request):
 
     for a in nameLines:
         print(a)
-        lineprueba = line_status.objects.filter(
+        lineprueba = lstatus.objects.filter(
             ~Q(status="inactivo"), lineName=a, endTime__isnull=True).first()
         print("xd", lineprueba.status)
         status[a] = lineprueba.status
@@ -83,9 +83,11 @@ def maintenance(request):
     device_name = request.GET.get('device_name')
     username = request.GET.get('username')
     shift = request.GET.get('shift')
-    line_status = request.GET.get('line_status')
+   # line_status = request.GET.get('line_status')
+    line_status = lstatus.objects.filter(
+        lineName=line, endTime__isnull=True).first().status
+    print("Line Status:", line_status)
 
-    
     # Encuentra el objeto de línea y dispositivo que corresponden a la línea y el nombre del dispositivo
     line_object = lines.objects.filter(name=line).first()
     device_object = odevice.objects.filter(name=device_name).first()
@@ -104,9 +106,9 @@ def maintenance(request):
     print("Line ID:", line_id)
     print("Device ID:", device_id)
 
-    #los id que obtiene arriba son objetos, aquí abajo se transforman en int para enviarlos a las tablas    
+    # los id que obtiene arriba son objetos, aquí abajo se transforman en int para enviarlos a las tablas
     lineId = request.POST.get('line_id')
-    deviceId = request.POST.get('device_id')   
+    deviceId = request.POST.get('device_id')
 
     if request.method == "POST":
         action = request.POST['action']
@@ -117,32 +119,48 @@ def maintenance(request):
             notas = request.POST.get('notas', '').strip()
 
             if option is None or notas == '':
-                messages.error(request, 'Por favor, complete todos los campos antes de seleccionar DETENCIÓN.')
+                messages.error(
+                    request, 'Por favor, complete todos los campos antes de seleccionar DETENCIÓN.')
                 return redirect('maintenance')
-            #Captura el momento exacto en donde se envía el formulario (horas, minutos, segundos)
-            lines_maintenance_obj = lines_maintance(lineId=lineId, point=option, notes=notas, starTime=timezone.now() )
+            # Captura el momento exacto en donde se envía el formulario (horas, minutos, segundos)
+            lines_maintenance_obj = lines_maintance(
+                lineId=lineId, point=option, notes=notas, starTime=timezone.now())
+
             lines_maintenance_obj.save()
+            status_line = lstatus.objects.filter(
+                lineName=line, endTime__isnull=True).first()
+            status_line.status = "inactivo"
+            status_line.save()
             request.session['lines_maintenance_id'] = lines_maintenance_obj.id
 
-            device = device_maintance(deviceId=deviceId, point=option, lineid=lineId, notes=notas, starTime=timezone.now() )
+            device = device_maintance(
+                deviceId=deviceId, point=option, lineid=lineId, notes=notas, starTime=timezone.now())
             device.save()
-            #request.session sirve para almacenar y recuperar datos específicos del usuario durante múltiples solicitudes (requests)
+            # request.session sirve para almacenar y recuperar datos específicos del usuario durante múltiples solicitudes (requests)
             request.session['device_maintenance_id'] = device.id
 
         elif action == 'ARRANQUE':
             # El arranque solo envía el endTime a las tablas, para eso recupera su id que se extranjo de request.session y rellena esa columna vacía que se envía al principío en detención
-            end_time = timezone.now() 
+            end_time = timezone.now()
             lines_maintenance_id = request.session.get('lines_maintenance_id')
+            status_line = lstatus.objects.filter(
+                lineName=line, endTime__isnull=True).first()
+            status_line.status = "activo"
+            status_line.save()
             if lines_maintenance_id:
-                lines_maintenance_obj2 = lines_maintance.objects.filter(id=lines_maintenance_id).first()
+                lines_maintenance_obj2 = lines_maintance.objects.filter(
+                    id=lines_maintenance_id).first()
                 if lines_maintenance_obj2:
                     lines_maintenance_obj2.endTime = timezone.now()
                     lines_maintenance_obj2.save()
+
                     del request.session['lines_maintenance_id']
 
-            device_maintenance_id = request.session.get('device_maintenance_id')
+            device_maintenance_id = request.session.get(
+                'device_maintenance_id')
             if device_maintenance_id:
-                device_maintenance_obj2 = device_maintance.objects.filter(id=device_maintenance_id).first()
+                device_maintenance_obj2 = device_maintance.objects.filter(
+                    id=device_maintenance_id).first()
                 if device_maintenance_obj2:
                     device_maintenance_obj2.endTime = end_time
                     device_maintenance_obj2.save()
