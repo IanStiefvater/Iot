@@ -58,6 +58,11 @@
                     <input type="text" name="status" value="{{status|get_item:line}}" disabled  style="background-color: #077a16bf;" class="col-12 form-control border-0 text-white" id="floatingInput" placeholder="{{ name }}">
                   </div>
                   {% endif %}
+                  {% if  status|get_item:line != "activo" %}
+                  <div class="col-6 mt-3  card" style="background-color: none; border: none;">
+                    <input type="text" name="status" value="{{status|get_item:line}}" disabled  style="background-color: red;" class="col-12 form-control border-0 text-white" id="floatingInput" placeholder="{{ name }}">
+                  </div>
+                  {% endif %}
 
                 </div>
                 
@@ -82,7 +87,22 @@
                                       {% endwith %}
                                     
                                   </div>    
-                                  {% endif %}                       
+                                  {% endif %}   
+                                  {% if  status|get_item:line != "activo" %}
+                                  <form action="" class="card "  style="background-color: red;">
+                                   
+                                      <div class="row mx-2 my-3 " style="font-weight: bolder;">
+                                        
+                                          {% with counter=forloop.counter|stringformat:"s"|add:0 %}
+                                            <a href="./maintenance?device_name={{ nameDevices|get_item:line|get_item:counter }}&line={{ line }}&username={{ name }}&shift={{ turno }}&line_status={{ status|get_item:line }}" target="_self" style="cursor: pointer;" class=" text-dark text-decoration-none">
+                                             
+                                              <p class="text-center mt-1" style=" color: white;"> DISPOSITIVO {{ counter }}</p>
+                                              <p class="text-center" style=" color: white;"> {{nameDevices|get_item:line|get_item:counter}}</p>                              
+                                            </a>
+                                          {% endwith %}
+                                        
+                                      </div>    
+                                      {% endif %}                                    
                               </form>
                               
                             </div>

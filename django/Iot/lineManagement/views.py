@@ -48,7 +48,7 @@ def control(request):
     for a in nameLines:
         print(a)
         lineprueba = lstatus.objects.filter(
-            ~Q(status="inactivo"), lineName=a, endTime__isnull=True).first()
+ lineName=a, endTime__isnull=True).first()
         print("xd", lineprueba.status)
         status[a] = lineprueba.status
 
