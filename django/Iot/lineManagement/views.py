@@ -48,7 +48,7 @@ def control(request):
     for a in nameLines:
         print(a)
         lineprueba = lstatus.objects.filter(
- lineName=a, endTime__isnull=True).first()
+            lineName=a, endTime__isnull=True).first()
         print("xd", lineprueba.status)
         status[a] = lineprueba.status
 
@@ -114,9 +114,10 @@ def maintenance(request):
         action = request.POST['action']
         request.session['action'] = action
 
-        if action == 'DETENCIÓN' and line_status == 'activo':
+        if action == 'DETENCION' and line_status == 'activo':
             option = request.POST.get('options', None)
             notas = request.POST.get('notas', '').strip()
+            print("notas: ", notas)
 
             if option is None or notas == '':
                 messages.error(
