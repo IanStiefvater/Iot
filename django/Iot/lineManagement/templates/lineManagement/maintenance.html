@@ -134,24 +134,21 @@
 </head>
 <body>
     <header class="navbar navbar-expand-lg navbar-light bg-dark d-flex justify-content-evenly align-items-center" style="height: 100px;">
-        <nav class="" >
+        <nav class="w-100" >
             <div class="container-fluid">
                 <button class="navbar-toggler btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon btn-light"></span>
                 </button>        
-              <div class="collapse navbar-collapse" id="navbarTogglerDemo01" style="font-size: 18px;">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex justify-content-evenly">
-                    <li class="nav-item mx-5 px-3">
-                        <a class="nav-link active text-white" aria-current="page" href="#">Inicio</a>
-                    </li>
-                    <li class="nav-item mx-5 px-3">
-                        <a class="nav-link active text-white" aria-current="page" href="#">Operación</a>
-                    </li>
-                    <li class="nav-item mx-5 px-3">
-                        <a class="nav-link text-white" href="#">Fin de turno</a>
-                    </li>
-                </ul>
-              </div>
+                <div class="collapse navbar-collapse" id="navbarTogglerDemo01" style="font-size: 18px;">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 w-100 d-flex justify-content-evenly">
+                        <li class="nav-item mx-5 px-3" >
+                            <a class="nav-link active text-white" aria-current="page" href="#">Inicio</a>
+                        </li>
+                        <li class="nav-item mx-5 px-3" style="border: solid 3px rgb(7, 104, 136)">
+                            <a class="nav-link active text-white" aria-current="page" href="#">Operación</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </nav>
     </header>
@@ -161,7 +158,7 @@
             <form method="post" action="">
                 {% csrf_token %}
                 <div class="py-5 d-flex justify-content-center w-70 mx-3 p-3 border border-1 border-dark mb-3" style="border-radius: 10px;">
-                    <div class="container d-flex mx-auto flex-column justify-content-center align-items-center col-6">
+                    <div class="container-fluid d-flex mx-auto flex-column justify-content-center align-items-center col-6">
                         <input type="hidden" name="line_id" value="{{ line_id }}">
                         <input type="hidden" name="device_id" value="{{ device_id }}">
                         <div class="responsive form-group col-12 col-md-6 d-flex my-3" style="height: 100px; border-radius: 15px; background-color: rgb(187, 187, 187);">
@@ -180,6 +177,7 @@
                             <label class="col-3 ms-3 col-form-label text-start text-md-end" style="font-size: 25px; color: rgb(56, 56, 56);">Bloque:</label>
                             <div class="col-8">
                                 <input name="blockes" class="ms-3 mb-0 fs-4 border-0" style="color: rgb(56, 56, 56); background-color: transparent; font-size: 15px;" value="{{ device_name }}" disabled>
+                                <input type="hidden" name="device_id" value="{{ deviceID }}">
                             </div>
                         </div>
                     </div>
@@ -190,7 +188,7 @@
                 <div class="mx-3 p-3 border border-1 border-dark mb-3" style="border-radius: 10px;">
                     <div class="row">
                         <div class="col-md-6 col-sm-12 mt-3 mb-3">
-                            {% if line_status == 'activo' %}
+                            {% if device_status == 'activo' %}
                             <div class="d-flex justify-content-around align-items-start">
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="options" id="option1" value="Set Up" required style="height: 20px; width: 20px;">
@@ -206,7 +204,7 @@
                                 </div>
                             </div>
                             {% endif %}
-                            {% if line_status != 'activo' %}
+                            {% if device_status != 'activo' %}
                             <div class="d-flex justify-content-around align-items-start">
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="options" id="option1" value="Set Up" style="height: 20px; width: 20px;">
@@ -224,30 +222,30 @@
                             {% endif %}
                             <div class="mt-5 mx-3">
                                 <label class="me-4 fs-5" style="font-size: 20px;">NOTAS</label>
-                                {% if line_status == 'activo' %}
+                                {% if device_status == 'activo' %}
                                 <textarea name="notas" class="d-block border mt-1 border-1 border-dark fs-6 text-dark" style="border-radius: 10px; background-color: rgba(255, 255, 255, 0.726); width: 100%; height: 100px; resize: none;" required placeholder="Explica detalladamente la razón del detenimiento"></textarea>
                                 {% endif %}
-                                {% if line_status != 'activo' %}
+                                {% if device_status != 'activo' %}
                                 <textarea name="notas" class="d-block border mt-1 border-1 border-dark fs-6 text-dark" style="border-radius: 10px; background-color: rgba(255, 255, 255, 0.726); width: 100%; height: 100px; resize: none;" placeholder="Explica detalladamente la razón del detenimiento"></textarea>
                                 {% endif %}
                             </div>
                         </div>
                         <div class="responsivo1 col-md-6 col-sm-12 d-flex flex-column align-items-center">
                             <div class="d-flex flex-column justify-content-around align-items-center" style="height: 100%;">
-                                {% if line_status == "activo" %}
+                                {% if device_status == "activo" %}
                                     <div class="d-flex align-items-center mb-3">
-                                        <p class="responsivo2 fs-5" style="font-size: 20px;">Última detención</p>
+                                        <p class="responsivo2 fs-5" style="font-size: 20px;">Última Detención</p>
                                         <div class="responsivo2 text-center" style="background-color:rgb(85, 85, 85); color: white; font-size: 20px; border-radius: 10px; width: 150px; height: 60px;" disabled>
                                         </div>
-                                            <input type="submit" name="action" class="mx-5 text-white boton" value="DETENCION" style="height: 60px; width: 100px; background-color: #0d6efd; border-radius: 10px; cursor: pointer; border: none;">
+                                            <input type="submit" name="action" class="mx-5 text-white boton" value="DETENER" style="height: 60px; width: 100px; background-color: #0d6efd; border-radius: 10px; cursor: pointer; border: none;">
                                     </div>
                                 {% endif %}
-                                {% if line_status != "activo" %}
+                                {% if device_status != "activo" %}
                                     <div class="d-flex align-items-center">
                                         <p class="responsivo2 fs-5" style="font-size: 20px;">Último Arranque</p>
                                         <div class="responsivo2 text-center" style="background-color:rgb(85, 85, 85); color: white; font-size: 20px; border-radius: 10px; width: 150px; height: 60px;" disabled>
                                         </div>
-                                            <input type="submit" name="action" class="mx-5 text-white boton" value="ARRANQUE" style="height: 60px; width: 100px; background-color: #0d6efd; border-radius: 10px; cursor: pointer; border: none;">
+                                            <input type="submit" name="action" class="mx-5 text-white boton" value="ARRANCAR" style="height: 60px; width: 100px; background-color: #0d6efd; border-radius: 10px; cursor: pointer; border: none;">
                                     </div>
                                 {% endif %}
                             </div>
@@ -258,12 +256,12 @@
         </div>
         <div class="w-30 mt-4 mx-3 p-3 border border-1 border-dark" style="border-radius: 10px; background-color: rgba(247, 143, 143, 0.726);">
             <div class="row">
-                <h3 class="fs-6 text-dark">DATOS HISTÓRICOS</h3>
-                {% for issue in notes %}
-                    <div>
-                        <p>{{ issue.starTime|time:"H:i:s" }} - {{ issue.endTime|time:"H:i:s" }} : {{ issue.notes }}</p>
-                    </div>
-                {% endfor %}
+                <h3 class="fs-6 text-dark">DATOS HISTÓRICOS DEL DISPOSITIVO</h3>
+                {% for note in notes %}
+                <div>
+                    <p>_ {{ note.point}} | {{ note.starTime|time:"H:i:s" }} - {{ note.endTime|time:"H:i:s" }} : {{ note.notes }}</p>
+                </div>
+             {% endfor %}
             </div>
         </div>
         <div class="responsivo5">

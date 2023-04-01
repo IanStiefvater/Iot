@@ -26,7 +26,7 @@ class device_status(models.Model):
     lineid = models.IntegerField(default=0)
     starTime = models.DateTimeField(default=timezone.now)
     endTime = models.DateTimeField(null=True, blank=True)
-    status = models.BooleanField(default=True)
+    status = models.CharField(max_length=255, default='activo')
 
 
 class lines_maintance (models.Model):

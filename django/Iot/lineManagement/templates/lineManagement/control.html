@@ -10,10 +10,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <title>Control</title>
+    <style>
+      .device-activo {
+        background-color: #077a16bf;
+      }
+
+      .device-inactivo {
+          background-color: red;
+      }
+
+      .device-espera {
+          background-color: #C9C8BA;
+      }
+      .href-activo {
+        border: none;
+        background-color: #077a1600;
+        text-decoration: none;
+        color: #FFFFFF;
+      }
+
+      .href-inactivo {
+        border: none;
+        background-color: rgba(255, 0, 0, 0);
+        text-decoration: none;
+          color: #FFFFFF;
+      }
+
+      .href-espera {
+        border: none;
+        background-color: #c9c8ba00;
+        text-decoration: none;
+        color: #3f3f3f;
+      }      
+      .href-activo:hover {
+        border: none;
+        background-color: #077a1600;
+        text-decoration: none;
+        color: #FFFFFF;
+      }
+
+      .href-inactivo:hover {
+        border: none;
+        background-color: rgba(255, 0, 0, 0);
+        text-decoration: none;
+          color: #FFFFFF;
+      }
+
+      .href-espera:hover {
+        border: none;
+        background-color: #c9c8ba00;
+        text-decoration: none;
+        color: #3f3f3f;
+      }
+        </style>
    
 </head>
 <body>
-    <header class="navbar navbar-expand-lg navbar-light bg-dark d-flex justify-content-evenly align-items-center">
+    <header class="navbar navbar-expand-lg navbar-light bg-dark d-flex justify-content-evenly align-items-center" style="height: 100px;">
         <nav class="w-100" >
             <div class="container-fluid">
                 <button class="navbar-toggler btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,14 +74,11 @@
                 </button>        
               <div class="collapse navbar-collapse" id="navbarTogglerDemo01" style="font-size: 18px;">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 w-100 d-flex justify-content-evenly">
-                    <li class="nav-item mx-5 px-3">
+                    <li class="nav-item mx-5 px-3" style="border: solid 3px rgb(7, 104, 136)">
                         <a class="nav-link active text-white" aria-current="page" href="#">Inicio</a>
                     </li>
                     <li class="nav-item mx-5 px-3">
                         <a class="nav-link active text-white" aria-current="page" href="#">Operación</a>
-                    </li>
-                    <li class="nav-item mx-5 px-3">
-                        <a class="nav-link text-white" href="#">Fin de turno</a>
                     </li>
                 </ul>
               </div>
@@ -53,12 +103,12 @@
                   <div class="col-6 mt-3">
                     <input type="text" name="line[]" value="{{ line }}" disabled class="form-control" id="floatingInput" placeholder="{{ name }}">
                   </div>
-                  {% if  status|get_item:line == "activo" %}
+                  {% if  status|get_item:line == "Activa" %}
                   <div class="col-6 mt-3  card" style="background-color: none; border: none;">
                     <input type="text" name="status" value="{{status|get_item:line}}" disabled  style="background-color: #077a16bf;" class="col-12 form-control border-0 text-white" id="floatingInput" placeholder="{{ name }}">
                   </div>
                   {% endif %}
-                  {% if  status|get_item:line != "activo" %}
+                  {% if  status|get_item:line != "Activa" %}
                   <div class="col-6 mt-3  card" style="background-color: none; border: none;">
                     <input type="text" name="status" value="{{status|get_item:line}}" disabled  style="background-color: red;" class="col-12 form-control border-0 text-white" id="floatingInput" placeholder="{{ name }}">
                   </div>
@@ -70,44 +120,24 @@
                   <div class="row mt-5">
                     {% for device_name, device_count in devices.items %}
                       {% if device_name == line %}
-                        <div class="row">
-                          {% for i in "x"|ljust:device_count %}
-                            <div class="col-auto  mx-auto">
-                              {% if  status|get_item:line == "activo" %}
-                              <form action="" class="card "  style="background-color: #077a16bf;">
-                               
-                                  <div class="row mx-2 my-3 " style="font-weight: bolder;">
-                                    
-                                      {% with counter=forloop.counter|stringformat:"s"|add:0 %}
-                                        <a href="./maintenance?device_name={{ nameDevices|get_item:line|get_item:counter }}&line={{ line }}&username={{ name }}&shift={{ turno }}&line_status={{ status|get_item:line }}" target="_self" style="cursor: pointer;" class=" text-dark text-decoration-none">
-                                         
-                                          <p class="text-center mt-1" style=" color: white;"> DISPOSITIVO {{ counter }}</p>
-                                          <p class="text-center" style=" color: white;"> {{nameDevices|get_item:line|get_item:counter}}</p>                              
-                                        </a>
-                                      {% endwith %}
-                                    
-                                  </div>    
-                                  {% endif %}   
-                                  {% if  status|get_item:line != "activo" %}
-                                  <form action="" class="card "  style="background-color: red;">
-                                   
-                                      <div class="row mx-2 my-3 " style="font-weight: bolder;">
-                                        
-                                          {% with counter=forloop.counter|stringformat:"s"|add:0 %}
-                                            <a href="./maintenance?device_name={{ nameDevices|get_item:line|get_item:counter }}&line={{ line }}&username={{ name }}&shift={{ turno }}&line_status={{ status|get_item:line }}" target="_self" style="cursor: pointer;" class=" text-dark text-decoration-none">
-                                             
-                                              <p class="text-center mt-1" style=" color: white;"> DISPOSITIVO {{ counter }}</p>
-                                              <p class="text-center" style=" color: white;"> {{nameDevices|get_item:line|get_item:counter}}</p>                              
-                                            </a>
-                                          {% endwith %}
-                                        
-                                      </div>    
-                                      {% endif %}                                    
-                              </form>
-                              
-                            </div>
-                          {% endfor %}
-                        </div>
+                          <div class="row">
+                              {% for device_id, device_info in device_items %}
+                                  {% with counter=forloop.counter|stringformat:"s"|add:0 %}
+                                      <div class="col-auto mx-auto">
+                                          {% for item in device_info.items %}
+                                              <form action="" class="card {% if item.status == 'activo' %}device-activo{% elif item.status == 'inactivo' %}device-inactivo{% else %}device-espera{% endif %}">
+                                                  <div class="row mx-2 my-3" style="font-weight: bolder;">
+                                                      <a href="./maintenance?deviceID={{ device_info.id }}&device_name={{ device_info.name }}&line={{ line }}&username={{ name }}&shift={{ turno }}&line_status={{ status|get_item:line }}" target="_self" style="cursor: pointer;" class="card {% if item.status == 'activo' %}href-activo{% elif item.status == 'inactivo' %}href-inactivo{% else %}href-espera{% endif %}">
+                                                          <p class="text-center mt-1">DISPOSITIVO {{ counter }}</p>
+                                                          <p class="text-center">{{ device_info.name }}</p>
+                                                      </a>
+                                                  </div>
+                                              </form>
+                                          {% endfor %}
+                                      </div>
+                                  {% endwith %}
+                              {% endfor %}
+                          </div>
                       {% endif %}
                     {% endfor %}
                   </div>
@@ -115,12 +145,6 @@
               </div>
               {% endfor %}
             </div>
-              
-                
-                
-           
-
-
             <div class="card mt-5 mx-5 py-3 px-3">
                 <div class="row mx-5 mt-3">
                     

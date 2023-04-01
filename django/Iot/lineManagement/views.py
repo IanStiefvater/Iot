@@ -14,13 +14,14 @@ from django.http import HttpResponse
 from django.contrib import messages
 
 from login.models import user as loginUser
-from .models import config, lines, devices as odevice, device_maintance, line_status as lstatus, device_status
+from .models import config, lines, devices as odevice, device_maintance, line_status as lstatus, device_status as dstatus
 from django.db.models import Q
 from django.db import models
 
 
 def control(request):
     nameLines = request.session.get('namelines', [])
+    
 
     if request.method == "POST":
         if request.POST.get("turno") is not None:
@@ -28,10 +29,22 @@ def control(request):
             for a in nameLines:
 
                 lineprueba = lstatus.objects.filter(
-                    ~Q(status="inactivo"), lineName=a, endTime__isnull=True).first()
-                lineprueba.status = "inactivo"
+                    ~Q(status="Terminado"), lineName=a, endTime__isnull=True).first()
+                lineprueba.status = "Terminado"
                 lineprueba.endTime = timezone.now()
                 lineprueba.save()
+
+            devices_query = odevice.objects.filter(line=a)
+            print(devices_query)
+            for device in devices_query:
+                device_status = dstatus.objects.filter(
+                    ~Q(status="Terminado"), deviceId=device.id, endTime__isnull=True).first()  
+                device_status.status = 'Terminado'
+                device_status.endTime = timezone.now()
+                device_status.save()
+                dev_maintenance = device_maintance.objects.filter(deviceId=device.id, endTime__isnull=True).first()
+                dev_maintenance.endTime = timezone.now()
+                dev_maintenance.save()
             logout(request)
             return redirect('login')
 
@@ -43,16 +56,6 @@ def control(request):
 
     results = lines.objects.all()
 
-    status = {}
-
-    for a in nameLines:
-        print(a)
-        lineprueba = lstatus.objects.filter(
-            lineName=a, endTime__isnull=True).first()
-        print("xd", lineprueba.status)
-        status[a] = lineprueba.status
-
-    print(status, "status")
 
     devices = {}
 
@@ -61,29 +64,69 @@ def control(request):
 
     device_names = {}
 
-
-# Obtener las líneas únicas de la base de datos de dispositivos
-    for line in set(device.line for device in odevice.objects.all()):
-
-        # Crear un diccionario para almacenar los nombres de los dispositivos en esta línea
-        device_names[line] = {}
+    # Obtener los dispositivos de las líneas seleccionadas
+    devices_query = odevice.objects.filter(line__in=nameLines)
+    # Crear un diccionario para almacenar los nombres de los dispositivos en esta línea
+    device_names = {}
 
     # Filtrar los dispositivos por línea y almacenar sus nombres e ids en el diccionario
+    for line in nameLines:
+        device_names[line] = {}
+        #Obtener el estado de cada devices de las lineas
+        for device in devices_query.filter(line=line):
+            device_status = dstatus.objects.filter(deviceId=device).order_by('-starTime').first()
+            if device_status:
+                device_info = device.name
+                device_estado = device_status.status
 
-        for device in odevice.objects.filter(line=line):
-            device_names[line][device.deviceId] = device.name
+            else:
+                device_info = device.name
 
-    print(device_names)
-    print("------")
-    return render(request, "lineManagement/control.html", {'turno': turno, "name": name, "lineas": lineas, "namelines": nameLines, "devices": devices, "nameDevices": device_names, "status": status})
+            items=[]
+            if device_status and device_status.status == "activo":
+                items.append({"status": "activo", "css": "background-color: #077a16bf; color: #FFFFFF"})
+            elif device_status and device_status.status == "inactivo":
+                items.append({"status": "inactivo", "css": "background-color: red; color: #FFFFFF"})
+            elif device_status and device_status.status == "En espera":
+                items.append({"status": "En espera", "css": "background-color: #C9C8BA; color: #737373"})
+                    
+            device_names[line][device.id] = {"id": device.id, "name": device_info, "status": device_estado, "items": items}
+        print(device_names)
+        # crear una variable intermedia para acceder a los elementos de `device_names[line]`
+        device_items = device_names.get(line, {}).items()
+
+        #Obtener el estado de todos los devices y asignar el estado a la línea
+        line_status = {}
+        for a in nameLines:
+            line_status[a] = 'activo' # Establecer línea como activa por defecto
+            for device in device_names.get(line, {}).values():
+                if device['status'] != 'inactivo': # Si al menos un dispositivo está activo o en espera, la línea está activa
+                    line_status[a] = 'Activa'
+                    break
+            else: # Si no se encontró ningún dispositivo activo o en espera, establecer la línea como inactiva
+                line_status[a] = 'Inactiva'
+        print(line_status[a])
+
+        for line, status in line_status.items():
+            line_object = lines.objects.get(name=line)
+            line_status_object = lstatus.objects.filter(lineName=line, endTime__isnull=True).first()
+            if line_status_object:
+                line_status_object.status = status
+                line_status_object.save()
+            else:
+                lstatus.objects.create(lineName=line_object, status=status, starTime=timezone.now())
+            
+    return render(request, "lineManagement/control.html", {'turno': turno, "name": name, "lineas": lineas, "namelines": nameLines, "devices": devices, "device_items": device_items, "status": line_status})
 
 
 def maintenance(request):
     line = request.GET.get('line')
+    print(line)
     device_name = request.GET.get('device_name')
+
+    print(device_name)
     username = request.GET.get('username')
     shift = request.GET.get('shift')
-   # line_status = request.GET.get('line_status')
     line_status = lstatus.objects.filter(
         lineName=line, endTime__isnull=True).first().status
     print("Line Status:", line_status)
@@ -100,21 +143,20 @@ def maintenance(request):
 
     # Obtén los IDs
     line_id = line_object.id
-    device_id = device_object.deviceId
-    print("Line Object:", line_object)
-    print("Device Object:", device_object)
+    device_id = request.GET.get('deviceID')
+    device_status = dstatus.objects.filter(deviceId_id=device_id, endTime__isnull=True).first().status
     print("Line ID:", line_id)
     print("Device ID:", device_id)
+    print('Device status:',device_status)
 
     # los id que obtiene arriba son objetos, aquí abajo se transforman en int para enviarlos a las tablas
     lineId = request.POST.get('line_id')
-    deviceId = request.POST.get('device_id')
 
     if request.method == "POST":
         action = request.POST['action']
         request.session['action'] = action
 
-        if action == 'DETENCION' and line_status == 'activo':
+        if action == 'DETENER':
             option = request.POST.get('options', None)
             notas = request.POST.get('notas', '').strip()
             print("notas: ", notas)
@@ -124,41 +166,28 @@ def maintenance(request):
                     request, 'Por favor, complete todos los campos antes de seleccionar DETENCIÓN.')
                 return redirect('maintenance')
             # Captura el momento exacto en donde se envía el formulario (horas, minutos, segundos)
-            lines_maintenance_obj = lines_maintance(
-                lineId=lineId, point=option, notes=notas, starTime=timezone.now())
-
-            lines_maintenance_obj.save()
-            status_line = lstatus.objects.filter(
-                lineName=line, endTime__isnull=True).first()
-            status_line.status = "inactivo"
-            status_line.save()
-            request.session['lines_maintenance_id'] = lines_maintenance_obj.id
 
             device = device_maintance(
-                deviceId=deviceId, point=option, lineid=lineId, notes=notas, starTime=timezone.now())
+                deviceId=device_id, point=option, lineid=lineId, notes=notas, starTime=timezone.now())
             device.save()
+            status_device = dstatus.objects.filter(
+            deviceId_id=device_id, endTime__isnull=True).first()
+            status_device.status = "inactivo"
+            status_device.save()
             # request.session sirve para almacenar y recuperar datos específicos del usuario durante múltiples solicitudes (requests)
             request.session['device_maintenance_id'] = device.id
 
-        elif action == 'ARRANQUE':
+        elif action == 'ARRANCAR':
             # El arranque solo envía el endTime a las tablas, para eso recupera su id que se extranjo de request.session y rellena esa columna vacía que se envía al principío en detención
             end_time = timezone.now()
-            lines_maintenance_id = request.session.get('lines_maintenance_id')
-            status_line = lstatus.objects.filter(
-                lineName=line, endTime__isnull=True).first()
-            status_line.status = "activo"
-            status_line.save()
-            if lines_maintenance_id:
-                lines_maintenance_obj2 = lines_maintance.objects.filter(
-                    id=lines_maintenance_id).first()
-                if lines_maintenance_obj2:
-                    lines_maintenance_obj2.endTime = timezone.now()
-                    lines_maintenance_obj2.save()
-
-                    del request.session['lines_maintenance_id']
-
+            status_device = dstatus.objects.filter(deviceId_id=device_id, endTime__isnull=True).first()
+            #Rellenar con el endTime la tabla de mantenimiento de dsipositivos
             device_maintenance_id = request.session.get(
                 'device_maintenance_id')
+            status_device = dstatus.objects.filter(
+            deviceId_id=device_id, endTime__isnull=True).first()
+            status_device.status = "activo"
+            status_device.save()
             if device_maintenance_id:
                 device_maintenance_obj2 = device_maintance.objects.filter(
                     id=device_maintenance_id).first()
@@ -167,5 +196,15 @@ def maintenance(request):
                     device_maintenance_obj2.save()
                     del request.session['device_maintenance_id']
 
-    notes = device_maintance.objects.all()
-    return render(request, "lineManagement/maintenance.html", {'notes': notes, 'device_name': device_name, 'line': line, 'username': username, 'shift': shift, 'line_status': line_status, 'line_id': line_id, 'device_id': device_id})
+    Nota = device_maintance.objects.filter(deviceId=device_id)
+    # Crear una lista vacía para almacenar las notas
+    notes = []
+
+    # Iterar sobre el queryset y agregar las notas a la lista
+    for nota in Nota:
+        notes.append(nota)
+        
+
+    # Imprimir la lista de notas
+    print(notes)
+    return render(request, "lineManagement/maintenance.html", {'notes': notes, 'device_name': device_name, 'line': line, 'username': username, 'shift': shift, 'device_status': device_status, 'line_id': line_id, 'device_id': device_id})

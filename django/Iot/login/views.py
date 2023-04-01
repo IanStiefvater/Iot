@@ -9,8 +9,8 @@ from django.db import connection
 from django.contrib.auth.decorators import login_required
 
 from .models import user as loginUser
-from lineManagement.models import config, lines
-from lineManagement.models import device_maintance, line_status
+from lineManagement.models import lines, devices
+from lineManagement.models import device_maintance, line_status, device_status
 from django.contrib.auth.hashers import make_password
 
 
@@ -50,36 +50,49 @@ def start_shift(request):
         username = request.POST.get("username")
         shift = request.POST.get("turno")
         request.session['turno'] = shift
-        line = request.POST.getlist("lines[]")
-        if shift is not None and line:
+        selected_lines = request.POST.getlist("lines[]") # Se obtienen todas las líneas seleccionadas
+        
+        if shift is not None and selected_lines:
+            lines_ids = []
+            linea = []
+            for line in selected_lines:
+                # Obtener información de la línea
+                line_obj = lines.objects.get(name=line)
+                lines_ids.append(line_obj.id)
+                linea.append(line_obj.name)
+                print('nombre de la linea : ',linea)
+                print('id de la línea : ',line_obj.id)
+                # Insertar línea en tabla line_status
+                user_obj = loginUser.objects.filter(iduser=request.session.get('userid')).first()
+                insertarline = line_status(lineName=line_obj.name, shift=shift, starTime=timezone.now(),
+                                            amountDevices=line_obj.amountDevice, userId=user_obj)
+                insertarline.save()
+                # Obtener dispositivos de la línea
+                devices_query = devices.objects.filter(line=line_obj.name)
+                device_ids = devices_query.values_list('id', flat=True)
+                devices_names = devices_query.values_list('name', flat=True)
+                print(devices_query)
+                print(devices_names)
+                print(device_ids)
 
-            # print(shift, line)
-            with connection.cursor() as cursor:
-                linea = []
-                for line in line:
-
-                    d = lines.objects.get(name=line)
-                    userid = loginUser.objects.filter(
-                        iduser=request.session.get('userid')).first()
-                    linea.append(d.name)
-                    insertarline = line_status(lineName=line, shift=shift, starTime=timezone.now(
-                    ), amountDevices=d.amountDevice, userId=userid)
-                    insertarline.save()
+                for device_id in device_ids:
+                    device_obj = devices.objects.get(id=device_id)
+                    insertar_device_status = device_status(deviceId=device_obj, shift=shift, starTime=timezone.now(), lineid=line_obj.id, data=0)
+                    insertar_device_status.save()
 
             request.session['namelines'] = linea
-        else:
 
+        else:
             # Handle missing keys
             pass
-        # aca rederigimos a los del ian
+
+        # Redireccionar a los del ian
         return redirect("../../linemanagement/home")
 
     iduser = request.session.get('userid')
-
     responsable = loginUser.objects.filter(iduser=iduser).first()
-
     name = responsable.name
 
-    num_lines = config.objects.get(id=1).numLines
-    request.session['lines'] = num_lines
-    return render(request, "login/turno.html", {"name": name, "num_lines": num_lines})
+    lineas = list(lines.objects.all().values('name'))
+    request.session['lineas'] = lineas
+    return render(request, "login/turno.html", {"name": name, "lineas": lineas})
