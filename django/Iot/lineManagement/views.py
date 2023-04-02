@@ -21,7 +21,6 @@ from django.db import models
 
 def control(request):
     nameLines = request.session.get('namelines', [])
-    
 
     if request.method == "POST":
         if request.POST.get("turno") is not None:
@@ -38,11 +37,12 @@ def control(request):
             print(devices_query)
             for device in devices_query:
                 device_status = dstatus.objects.filter(
-                    ~Q(status="Terminado"), deviceId=device.id, endTime__isnull=True).first()  
+                    ~Q(status="Terminado"), deviceId=device.id, endTime__isnull=True).first()
                 device_status.status = 'Terminado'
                 device_status.endTime = timezone.now()
                 device_status.save()
-                dev_maintenance = device_maintance.objects.filter(deviceId=device.id, endTime__isnull=True).first()
+                dev_maintenance = device_maintance.objects.filter(
+                    deviceId=device.id, endTime__isnull=True).first()
                 dev_maintenance.endTime = timezone.now()
                 dev_maintenance.save()
             logout(request)
@@ -55,7 +55,6 @@ def control(request):
     lineas = request.session.get('lines')
 
     results = lines.objects.all()
-
 
     devices = {}
 
@@ -72,9 +71,10 @@ def control(request):
     # Filtrar los dispositivos por línea y almacenar sus nombres e ids en el diccionario
     for line in nameLines:
         device_names[line] = {}
-        #Obtener el estado de cada devices de las lineas
+        # Obtener el estado de cada devices de las lineas
         for device in devices_query.filter(line=line):
-            device_status = dstatus.objects.filter(deviceId=device).order_by('-starTime').first()
+            device_status = dstatus.objects.filter(
+                deviceId=device).order_by('-starTime').first()
             if device_status:
                 device_info = device.name
                 device_estado = device_status.status
@@ -82,40 +82,48 @@ def control(request):
             else:
                 device_info = device.name
 
-            items=[]
+            items = []
             if device_status and device_status.status == "activo":
-                items.append({"status": "activo", "css": "background-color: #077a16bf; color: #FFFFFF"})
+                items.append(
+                    {"status": "activo", "css": "background-color: #077a16bf; color: #FFFFFF"})
             elif device_status and device_status.status == "inactivo":
-                items.append({"status": "inactivo", "css": "background-color: red; color: #FFFFFF"})
+                items.append(
+                    {"status": "inactivo", "css": "background-color: red; color: #FFFFFF"})
             elif device_status and device_status.status == "En espera":
-                items.append({"status": "En espera", "css": "background-color: #C9C8BA; color: #737373"})
-                    
-            device_names[line][device.id] = {"id": device.id, "name": device_info, "status": device_estado, "items": items}
+                items.append(
+                    {"status": "En espera", "css": "background-color: #C9C8BA; color: #737373"})
+
+            device_names[line][device.id] = {
+                "id": device.id, "name": device_info, "status": device_estado, "items": items}
         print(device_names)
         # crear una variable intermedia para acceder a los elementos de `device_names[line]`
         device_items = device_names.get(line, {}).items()
 
-        #Obtener el estado de todos los devices y asignar el estado a la línea
+        # Obtener el estado de todos los devices y asignar el estado a la línea
         line_status = {}
         for a in nameLines:
-            line_status[a] = 'activo' # Establecer línea como activa por defecto
+            # Establecer línea como activa por defecto
+            line_status[a] = 'activo'
             for device in device_names.get(line, {}).values():
-                if device['status'] != 'inactivo': # Si al menos un dispositivo está activo o en espera, la línea está activa
+                # Si al menos un dispositivo está activo o en espera, la línea está activa
+                if device['status'] != 'inactivo':
                     line_status[a] = 'Activa'
                     break
-            else: # Si no se encontró ningún dispositivo activo o en espera, establecer la línea como inactiva
-                line_status[a] = 'Inactiva'
+            else:  # Si no se encontró ningún dispositivo activo o en espera, establecer la línea como inactiva
+                line_status[a] = 'inactiva'
         print(line_status[a])
 
         for line, status in line_status.items():
             line_object = lines.objects.get(name=line)
-            line_status_object = lstatus.objects.filter(lineName=line, endTime__isnull=True).first()
+            line_status_object = lstatus.objects.filter(
+                lineName=line, endTime__isnull=True).first()
             if line_status_object:
                 line_status_object.status = status
                 line_status_object.save()
             else:
-                lstatus.objects.create(lineName=line_object, status=status, starTime=timezone.now())
-            
+                lstatus.objects.create(
+                    lineName=line_object, status=status, starTime=timezone.now())
+
     return render(request, "lineManagement/control.html", {'turno': turno, "name": name, "lineas": lineas, "namelines": nameLines, "devices": devices, "device_items": device_items, "status": line_status})
 
 
@@ -144,10 +152,11 @@ def maintenance(request):
     # Obtén los IDs
     line_id = line_object.id
     device_id = request.GET.get('deviceID')
-    device_status = dstatus.objects.filter(deviceId_id=device_id, endTime__isnull=True).first().status
+    device_status = dstatus.objects.filter(
+        deviceId_id=device_id, endTime__isnull=True).first().status
     print("Line ID:", line_id)
     print("Device ID:", device_id)
-    print('Device status:',device_status)
+    print('Device status:', device_status)
 
     # los id que obtiene arriba son objetos, aquí abajo se transforman en int para enviarlos a las tablas
     lineId = request.POST.get('line_id')
@@ -171,21 +180,23 @@ def maintenance(request):
                 deviceId=device_id, point=option, lineid=lineId, notes=notas, starTime=timezone.now())
             device.save()
             status_device = dstatus.objects.filter(
-            deviceId_id=device_id, endTime__isnull=True).first()
+                deviceId_id=device_id, endTime__isnull=True).first()
             status_device.status = "inactivo"
             status_device.save()
             # request.session sirve para almacenar y recuperar datos específicos del usuario durante múltiples solicitudes (requests)
             request.session['device_maintenance_id'] = device.id
+            return redirect('home')
 
         elif action == 'ARRANCAR':
             # El arranque solo envía el endTime a las tablas, para eso recupera su id que se extranjo de request.session y rellena esa columna vacía que se envía al principío en detención
             end_time = timezone.now()
-            status_device = dstatus.objects.filter(deviceId_id=device_id, endTime__isnull=True).first()
-            #Rellenar con el endTime la tabla de mantenimiento de dsipositivos
+            status_device = dstatus.objects.filter(
+                deviceId_id=device_id, endTime__isnull=True).first()
+            # Rellenar con el endTime la tabla de mantenimiento de dsipositivos
             device_maintenance_id = request.session.get(
                 'device_maintenance_id')
             status_device = dstatus.objects.filter(
-            deviceId_id=device_id, endTime__isnull=True).first()
+                deviceId_id=device_id, endTime__isnull=True).first()
             status_device.status = "activo"
             status_device.save()
             if device_maintenance_id:
@@ -195,6 +206,7 @@ def maintenance(request):
                     device_maintenance_obj2.endTime = end_time
                     device_maintenance_obj2.save()
                     del request.session['device_maintenance_id']
+            return redirect('home')
 
     Nota = device_maintance.objects.filter(deviceId=device_id)
     # Crear una lista vacía para almacenar las notas
@@ -203,8 +215,11 @@ def maintenance(request):
     # Iterar sobre el queryset y agregar las notas a la lista
     for nota in Nota:
         notes.append(nota)
-        
 
     # Imprimir la lista de notas
     print(notes)
     return render(request, "lineManagement/maintenance.html", {'notes': notes, 'device_name': device_name, 'line': line, 'username': username, 'shift': shift, 'device_status': device_status, 'line_id': line_id, 'device_id': device_id})
+
+
+def error_404_view(request, exception):
+    return render(request, 'error.html', {})

@@ -50,8 +50,9 @@ def start_shift(request):
         username = request.POST.get("username")
         shift = request.POST.get("turno")
         request.session['turno'] = shift
-        selected_lines = request.POST.getlist("lines[]") # Se obtienen todas las líneas seleccionadas
-        
+        # Se obtienen todas las líneas seleccionadas
+        selected_lines = request.POST.getlist("lines[]")
+
         if shift is not None and selected_lines:
             lines_ids = []
             linea = []
@@ -60,12 +61,13 @@ def start_shift(request):
                 line_obj = lines.objects.get(name=line)
                 lines_ids.append(line_obj.id)
                 linea.append(line_obj.name)
-                print('nombre de la linea : ',linea)
-                print('id de la línea : ',line_obj.id)
+                print('nombre de la linea : ', linea)
+                print('id de la línea : ', line_obj.id)
                 # Insertar línea en tabla line_status
-                user_obj = loginUser.objects.filter(iduser=request.session.get('userid')).first()
+                user_obj = loginUser.objects.filter(
+                    iduser=request.session.get('userid')).first()
                 insertarline = line_status(lineName=line_obj.name, shift=shift, starTime=timezone.now(),
-                                            amountDevices=line_obj.amountDevice, userId=user_obj)
+                                           amountDevices=line_obj.amountDevice, userId=user_obj)
                 insertarline.save()
                 # Obtener dispositivos de la línea
                 devices_query = devices.objects.filter(line=line_obj.name)
@@ -77,7 +79,8 @@ def start_shift(request):
 
                 for device_id in device_ids:
                     device_obj = devices.objects.get(id=device_id)
-                    insertar_device_status = device_status(deviceId=device_obj, shift=shift, starTime=timezone.now(), lineid=line_obj.id, data=0)
+                    insertar_device_status = device_status(
+                        deviceId=device_obj, shift=shift, starTime=timezone.now(), lineid=line_obj.id, data=0)
                     insertar_device_status.save()
 
             request.session['namelines'] = linea
@@ -96,3 +99,7 @@ def start_shift(request):
     lineas = list(lines.objects.all().values('name'))
     request.session['lineas'] = lineas
     return render(request, "login/turno.html", {"name": name, "lineas": lineas})
+
+
+def error_404_view(request, exception):
+    return render(request, 'error.html', {})
