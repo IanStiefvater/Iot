@@ -1,4 +1,3 @@
-
 {% load filter %}
 
 
@@ -118,26 +117,30 @@
                 
                 <div class="container">
                   <div class="row mt-5">
-                    {% for device_name, device_count in devices.items %}
-                      {% if device_name == line %}
-                          <div class="row">
-                              {% for device_id, device_info in device_items %}
-                                  {% with counter=forloop.counter|stringformat:"s"|add:0 %}
-                                      <div class="col-auto mx-auto">
-                                          {% for item in device_info.items %}
-                                              <form action="" class="card {% if item.status == 'activo' %}device-activo{% elif item.status == 'inactivo' %}device-inactivo{% else %}device-espera{% endif %}">
-                                                  <div class="row mx-2 my-3" style="font-weight: bolder;">
-                                                      <a href="./maintenance?deviceID={{ device_info.id }}&device_name={{ device_info.name }}&line={{ line }}&username={{ name }}&shift={{ turno }}&line_status={{ status|get_item:line }}" target="_self" style="cursor: pointer;" class="card {% if item.status == 'activo' %}href-activo{% elif item.status == 'inactivo' %}href-inactivo{% else %}href-espera{% endif %}">
-                                                          <p class="text-center mt-1">DISPOSITIVO {{ counter }}</p>
-                                                          <p class="text-center">{{ device_info.name }}</p>
-                                                      </a>
-                                                  </div>
-                                              </form>
-                                          {% endfor %}
-                                      </div>
-                                  {% endwith %}
-                              {% endfor %}
-                          </div>
+                    {% for lines, device_count in devices.items %}                   
+                      {% if lines == line %}
+                        <p>La condición lines == line se cumple</p>
+                          {% if line in device_names %}                              
+                                  <div class="row"> 
+                                      {% for device_id, device_info in device_items %}
+                                            {% with counter=forloop.counter|stringformat:"s"|add:0 %}
+                                                <div class="col-auto mx-auto">
+                                                    {% for item in device_info.items %}
+                                                        <form action="" class="card {% if item.status == 'activo' %}device-activo{% elif item.status == 'inactivo' %}device-inactivo{% else %}device-espera{% endif %}">
+                                                            <div class="row mx-2 my-3" style="font-weight: bolder;">
+                                                                <a href="./maintenance?deviceID={{ device_info.id }}&device_name={{ device_info.name }}&line={{ line }}&username={{ name }}&shift={{ turno }}&line_status={{ status|get_item:line }}" target="_self" style="cursor: pointer;" class="card {% if item.status == 'activo' %}href-activo{% elif item.status == 'inactivo' %}href-inactivo{% else %}href-espera{% endif %}">
+                                                                    <p class="text-center mt-1">DISPOSITIVO {{ counter }}</p>
+                                                                    <p class="text-center">{{ device_info.name }} - {{ device_info.id }}</p>
+                                                                </a>
+                                                            </div>
+                                                        </form>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endwith %}
+                                      {% endfor %}
+                                  </div>
+                              
+                          {% endif %}
                       {% endif %}
                     {% endfor %}
                   </div>

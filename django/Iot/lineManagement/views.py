@@ -78,6 +78,7 @@ def control(request):
             if device_status:
                 device_info = device.name
                 device_estado = device_status.status
+                #print(f"{device_info} cuyo id es {device.id}")
 
             else:
                 device_info = device.name
@@ -93,11 +94,10 @@ def control(request):
                 items.append(
                     {"status": "En espera", "css": "background-color: #C9C8BA; color: #737373"})
 
-            device_names[line][device.id] = {
-                "id": device.id, "name": device_info, "status": device_estado, "items": items}
-        print(device_names)
+            device_names[line][device.id] = {"id": device.id, "name": device_info, "status": device_estado, "items": items}   
         # crear una variable intermedia para acceder a los elementos de `device_names[line]`
         device_items = device_names.get(line, {}).items()
+        print(device_items)
 
         # Obtener el estado de todos los devices y asignar el estado a la línea
         line_status = {}
@@ -124,7 +124,7 @@ def control(request):
                 lstatus.objects.create(
                     lineName=line_object, status=status, starTime=timezone.now())
 
-    return render(request, "lineManagement/control.html", {'turno': turno, "name": name, "lineas": lineas, "namelines": nameLines, "devices": devices, "device_items": device_items, "status": line_status})
+    return render(request, "lineManagement/control.html", {'turno': turno, "name": name, "lineas": lineas, "namelines": nameLines, "devices": devices, "device_items": device_items, "device_names": device_names, "status": line_status})
 
 
 def maintenance(request):
