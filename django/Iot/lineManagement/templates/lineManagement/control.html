@@ -9,6 +9,154 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <title>Control</title>
+    
+   
+</head>
+<body>
+    <header class="navbar navbar-expand-lg navbar-light bg-dark d-flex justify-content-evenly align-items-center" style="height: 100px;">
+        <nav class="w-100" >
+            <div class="container-fluid">
+                <button class="navbar-toggler btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon btn-light"></span>
+                </button>        
+              <div class="collapse navbar-collapse" id="navbarTogglerDemo01" style="font-size: 18px;">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 w-100 d-flex justify-content-evenly">
+                    <li class="nav-item mx-5 px-3" style="border: solid 3px rgb(7, 104, 136)">
+                        <a class="nav-link active text-white" aria-current="page" href="#">Inicio</a>
+                    </li>
+                    <li class="nav-item mx-5 px-3">
+                        <a class="nav-link active text-white" aria-current="page" href="#">Operación</a>
+                    </li>
+                </ul>
+              </div>
+            </div>
+        </nav>
+    </header>
+          
+            <div class="mt-5 py-3 px-5 mb-5  col-11 mx-auto card" style="height: 250px; border-radius: 10px;">
+              <h2 class="mb-5 mt-3"style="font-size: 35px;">Responsable</h2>
+               <div class="col-12 d-flex align-items-center justify-content-evenly">   
+                  <div class="row mx-5 col-12">
+                      <div class="col-6 d-flex justify-content-center">
+                          <input style="height: 75px; font-size: 20px; border-radius: 10px;" type="text" name="username"  value="{{name}}" disabled class="col-12 d-flex text-center mx-auto" id="floatingInput" placeholder="{{name}}">
+                      </div>
+                      <div class="col-6 d-flex justify-content-center">
+                          <input style="height: 75px; background-color: #0d6efd; color: white; font-size: 20px; border-radius: 10px;" type="text" name="username"  value="{{turno}}" disabled class="col-12 d-flex text-center mx-auto" id="floatingInput" placeholder="{{name}}">
+                      </div>
+                  </div>
+                </div>
+            </div>
+              
+              {% for line in namelines %}
+              
+                <div class="row px-5  py-5 card col-11 mx-auto" style="border-radius: 10px;">
+                  <h2 style="font-size: 35px;" class="mb-5">Datos Operativos</h2>
+                  
+                    <div class="row mx-auto col-12 d-flex justify-content-evenly ">
+                        <div class="col-6 d-flex ">
+                          <input style="height: 75px;font-size: 20px; border-radius: 10px;" type="text" name="line[]" value="{{ line }}" disabled class="col-12 mx-auto text-center" id="floatingInput" placeholder="{{ name }}">
+                        </div>
+                        {% if  status|get_item:line == "Activa" %}
+                        <div class="col-6   d-flex justify-content-center" style="background-color: none; border: none;">
+                          <input  type="text" name="status" value="{{status|get_item:line}}" disabled  style="background-color: #077a16bf; height: 75px;font-size: 20px; border-radius: 10px;" class="col-12 border-0 text-white mx-auto text-center" id="floatingInput" placeholder="{{ name }}">
+                        </div>
+                        {% endif %}
+                        {% if  status|get_item:line != "Activa" %}
+                        <div class="col-6   d-flex justify-content-center te" style="background-color: none; border: none;">
+                          <input  type="text" name="status" value="{{status|get_item:line}}" disabled  style="background-color: red; height: 75px;font-size: 20px; border-radius: 10px;" class="col-12 border-0 text-white mx-auto text-cente" id="floatingInput" placeholder="{{ name }}">
+                        </div>
+                        {% endif %}
+                    </div>
+                
+                    <div class="">
+                      <div class="row mt-5 ">
+                        {% for device_id, device_info in device_items %}
+                          {% with items=device_info %}
+                              {% if items.line == line%}   
+                                  <div class="col-2  mx-auto">                                                       
+                                    <form action="" class="card my-2 {% if items.status == 'activo' %}device-activo{% elif items.status == 'inactivo' %}device-inactivo{% else %}device-espera{% endif %}">
+                                      <div class="row my-3" style="font-weight: bolder;">
+                                          <a href="./maintenance?deviceID={{ items.id }}&device_name={{ items.name }}&line={{ line }}&username={{ name }}&shift={{ turno }}&line_status={{ status|get_item:line }}" target="_self" style="cursor: pointer;" class="card {% if items.status == 'activo' %}href-activo{% elif items.status == 'inactivo' %}href-inactivo{% else %}href-espera{% endif %}">
+                                              <p class="text-center mt-1">DISPOSITIVO {{ items.deviceId }}</p>
+                                              <p class="text-center">{{ items.name }} </p>
+                                          </a>
+                                          {% if device_id in device_warnings and items.status == 'activo' %}
+                                            <div class="warning">{{ device_warnings }}</div>
+                                          {% endif %}
+                                      </div>
+                                    </form>
+                                </div>
+                              {% endif %}
+                          {% endwith %}
+                        {% endfor %}
+                      </div>
+                    </div>
+                </div>
+              {% endfor %}
+            </div>
+            <div class="col-11 card mt-5 mx-auto py-3  mb-5" style="border-radius: 10px;">
+                <div class="row mx-5 mt-3">
+                    
+                    <div class="col-5 ml-1">
+                        <form action="" method="POST">
+                          {% csrf_token %}
+                        <input value{{turno}} name="turno" class="d-none" style="height: 75px;">
+                        <input type="submit"   value="FIN DE TURNO" class="form-control  btn  btn-primary" id="floatingInput" style="height: 75px; font-size: 20px;">
+                        <form>
+                    </div>
+                  
+                    <div class="col-2 ml-1">
+                        <button class="btn btn-secondary px-4 py-2" id="clock" style="height: 75px; font-size: 20px;"></button>
+                    </div>
+                    <div class="col-3 mx-5">
+                        <input type="text" name="username"  value="{{turno}}" disabled class="col-12 text-center" id="floatingInput" placeholder="{{name}}" style="height: 75px; font-size: 20px;">
+                    </div>
+                    
+                </div>
+
+            </div>
+              
+
+           
+            <script>
+                function updateClock() {
+                  var now = new Date();
+                  var hours = now.getHours();
+                  var minutes = now.getMinutes();
+                  var seconds = now.getSeconds();
+                  var timeString = hours.toString().padStart(2, "0") + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
+                  document.getElementById("clock").innerHTML = timeString;
+                }
+              
+                setInterval(updateClock, 1000);
+              </script>
+
+              <script>
+                $(function() {
+                    $('device-search').on('input', function() {
+                        var query = $(this).val();
+                        $.getJSON('/search_products/' + query, function(data) {
+                            $('#search-results').empty();
+                            $.each(data, function(index, product) {
+                                $('<li>').text(product.name + ': $' + product.price).appendTo('#search-results');
+                            });
+                        });
+                    });
+                });
+              </script>
+              {% if reload_page %}
+                <script>
+                    window.location.reload();
+                </script>
+              {% endif %}
+                                
+
+
+
+
+
+
+    </div> 
     <style>
       .device-activo {
         background-color: #077a16bf;
@@ -62,150 +210,5 @@
         color: #3f3f3f;
       }
         </style>
-   
-</head>
-<body>
-    <header class="navbar navbar-expand-lg navbar-light bg-dark d-flex justify-content-evenly align-items-center" style="height: 100px;">
-        <nav class="w-100" >
-            <div class="container-fluid">
-                <button class="navbar-toggler btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon btn-light"></span>
-                </button>        
-              <div class="collapse navbar-collapse" id="navbarTogglerDemo01" style="font-size: 18px;">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 w-100 d-flex justify-content-evenly">
-                    <li class="nav-item mx-5 px-3" style="border: solid 3px rgb(7, 104, 136)">
-                        <a class="nav-link active text-white" aria-current="page" href="#">Inicio</a>
-                    </li>
-                    <li class="nav-item mx-5 px-3">
-                        <a class="nav-link active text-white" aria-current="page" href="#">Operación</a>
-                    </li>
-                </ul>
-              </div>
-            </div>
-        </nav>
-    </header>
-            <div class="card mt-3 py-3 px-5  col-11 mx-auto">
-                <div class="row mx-5 mt-3">
-                    <div class="col-6">
-                        <input type="text" name="username"  value="{{name}}" disabled class="form-control" id="floatingInput" placeholder="{{name}}">
-                    </div>
-                    <div class="col-6">
-                        <input type="text" name="username"  value="{{turno}}" disabled class="form-control btn  btn-primary" id="floatingInput" placeholder="{{name}}">
-                    </div>
-                    </div>
-                </div>
-                
-                {% for line in namelines %}
-                <div class="row mt-5 py-5 card mx-5">
-  
-                    <div class="row">
-                  <div class="col-6 mt-3">
-                    <input type="text" name="line[]" value="{{ line }}" disabled class="form-control" id="floatingInput" placeholder="{{ name }}">
-                  </div>
-                  {% if  status|get_item:line == "Activa" %}
-                  <div class="col-6 mt-3  card" style="background-color: none; border: none;">
-                    <input type="text" name="status" value="{{status|get_item:line}}" disabled  style="background-color: #077a16bf;" class="col-12 form-control border-0 text-white" id="floatingInput" placeholder="{{ name }}">
-                  </div>
-                  {% endif %}
-                  {% if  status|get_item:line != "Activa" %}
-                  <div class="col-6 mt-3  card" style="background-color: none; border: none;">
-                    <input type="text" name="status" value="{{status|get_item:line}}" disabled  style="background-color: red;" class="col-12 form-control border-0 text-white" id="floatingInput" placeholder="{{ name }}">
-                  </div>
-                  {% endif %}
-
-                </div>
-                
-                <div class="container">
-                  <div class="row mt-5">
-                    {% for lines, device_count in devices.items %}                   
-                      {% if lines == line %}
-                        <p>La condición lines == line se cumple</p>
-                          {% if line in device_names %}                              
-                                  <div class="row"> 
-                                      {% for device_id, device_info in device_items %}
-                                            {% with counter=forloop.counter|stringformat:"s"|add:0 %}
-                                                <div class="col-auto mx-auto">
-                                                    {% for item in device_info.items %}
-                                                        <form action="" class="card {% if item.status == 'activo' %}device-activo{% elif item.status == 'inactivo' %}device-inactivo{% else %}device-espera{% endif %}">
-                                                            <div class="row mx-2 my-3" style="font-weight: bolder;">
-                                                                <a href="./maintenance?deviceID={{ device_info.id }}&device_name={{ device_info.name }}&line={{ line }}&username={{ name }}&shift={{ turno }}&line_status={{ status|get_item:line }}" target="_self" style="cursor: pointer;" class="card {% if item.status == 'activo' %}href-activo{% elif item.status == 'inactivo' %}href-inactivo{% else %}href-espera{% endif %}">
-                                                                    <p class="text-center mt-1">DISPOSITIVO {{ counter }}</p>
-                                                                    <p class="text-center">{{ device_info.name }} - {{ device_info.id }}</p>
-                                                                </a>
-                                                            </div>
-                                                        </form>
-                                                    {% endfor %}
-                                                </div>
-                                            {% endwith %}
-                                      {% endfor %}
-                                  </div>
-                              
-                          {% endif %}
-                      {% endif %}
-                    {% endfor %}
-                  </div>
-                </div>
-              </div>
-              {% endfor %}
-            </div>
-            <div class="card mt-5 mx-5 py-3 px-3">
-                <div class="row mx-5 mt-3">
-                    
-                    <div class="col-5 ml-1">
-                        <form action="" method="POST">
-                          {% csrf_token %}
-                        <input value{{turno}} name="turno" class="d-none">
-                        <input type="submit"   value="FIN DE TURNO" class="form-control  btn  btn-primary" id="floatingInput" >
-                        <form>
-                    </div>
-                  
-                    <div class="col-2 ml-1">
-                        <button class="btn btn-secondary px-4 py-2" id="clock"></button>
-                    </div>
-                    <div class="col-3 mx-5">
-                        <input type="text" name="username"  value="{{turno}}" disabled class="form-control" id="floatingInput" placeholder="{{name}}">
-                    </div>
-                    
-                </div>
-
-            </div>
-              
-
-           
-            <script>
-                function updateClock() {
-                  var now = new Date();
-                  var hours = now.getHours();
-                  var minutes = now.getMinutes();
-                  var seconds = now.getSeconds();
-                  var timeString = hours.toString().padStart(2, "0") + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
-                  document.getElementById("clock").innerHTML = timeString;
-                }
-              
-                setInterval(updateClock, 1000);
-              </script>
-
-              <script>
-                $(function() {
-                    $('device-search').on('input', function() {
-                        var query = $(this).val();
-                        $.getJSON('/search_products/' + query, function(data) {
-                            $('#search-results').empty();
-                            $.each(data, function(index, product) {
-                                $('<li>').text(product.name + ': $' + product.price).appendTo('#search-results');
-                            });
-                        });
-                    });
-                });
-              </script>
-                                
-
-
-
-
-
-
-    </div> 
-    
 </body>
 </html>

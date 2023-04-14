@@ -2,7 +2,7 @@ from django.db import models
 from django.db import models
 from login.models import user
 from django.utils import timezone
-
+from datetime import date
 # Create your models here.
 
 
@@ -61,3 +61,18 @@ class line_status (models.Model):
 
 class config (models.Model):
     numLines = models.IntegerField(default=4)
+
+class device_production(models.Model):
+    deviceId = models.ForeignKey(devices, on_delete=models.CASCADE)
+    shift = models.CharField(max_length=200)
+    lineid = models.IntegerField(default=0)
+    production_data = models.CharField(max_length=1000)
+    created_at = models.CharField(max_length=1000)
+    date = models.DateField()
+
+    def set_date_from_status(self):
+        # Obtener el device_status más reciente para este dispositivo
+        status = device_status.objects.filter(deviceId=self.deviceId).order_by('-starTime').first()
+        if status:
+            # Extraer la fecha del campo starTime
+            self.date = status.starTime.date()

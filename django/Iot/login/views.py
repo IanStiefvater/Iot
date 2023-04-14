@@ -12,8 +12,8 @@ from .models import user as loginUser
 from lineManagement.models import lines, devices
 from lineManagement.models import device_maintance, line_status, device_status
 from django.contrib.auth.hashers import make_password
-
-
+import paho.mqtt.client as mqtt
+ 
 from django.utils import timezone
 
 timezone.activate('America/Argentina/Buenos_Aires')
@@ -34,7 +34,7 @@ def login_user(request):
             u.save()
 
             # redirigir a la proxima pagina
-            return redirect("shift")
+            return HttpResponseRedirect('/authenticate/shift/')
 
         else:
             messages.success(
@@ -42,6 +42,8 @@ def login_user(request):
             return redirect('login')
     else:  # sino esta logueado redirija a la pagina
         return render(request, 'login/login.html', {})
+
+
 
 
 @login_required
@@ -67,7 +69,7 @@ def start_shift(request):
                 user_obj = loginUser.objects.filter(
                     iduser=request.session.get('userid')).first()
                 insertarline = line_status(lineName=line_obj.name, shift=shift, starTime=timezone.now(),
-                                           amountDevices=line_obj.amountDevice, userId=user_obj)
+                                           amountDevices=line_obj.amountDevice, status="activa", userId=user_obj)
                 insertarline.save()
                 # Obtener dispositivos de la línea
                 devices_query = devices.objects.filter(line=line_obj.name)
@@ -103,3 +105,4 @@ def start_shift(request):
 
 def error_404_view(request, exception):
     return render(request, 'error.html', {})
+
