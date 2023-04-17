@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('lineManagement', '0015_device_production_lineid'),
+        ("lineManagement", "0015_device_production_lineid"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='device_production',
-            name='created_at',
-            field=models.CharField(max_length=100000),
+            model_name="device_production",
+            name="created_at",
+            field=models.CharField(max_length=250),
         ),
     ]
