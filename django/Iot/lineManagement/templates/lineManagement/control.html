@@ -46,12 +46,11 @@
                   </div>
                 </div>
             </div>
-              
+            <h2 style="font-size: 35px; margin-left: 6%;" class="mb-5" >Datos Operativos</h2>
               {% for line in namelines %}
               
                 <div class="row px-5  py-5 card col-11 mx-auto" style="border-radius: 10px;">
-                  <h2 style="font-size: 35px;" class="mb-5">Datos Operativos</h2>
-                  
+
                     <div class="row mx-auto col-12 d-flex justify-content-evenly ">
                         <div class="col-6 d-flex ">
                           <input style="height: 75px;font-size: 20px; border-radius: 10px;" type="text" name="line[]" value="{{ line }}" disabled class="col-12 mx-auto text-center" id="floatingInput" placeholder="{{ name }}">
@@ -80,9 +79,11 @@
                                               <p class="text-center mt-1">DISPOSITIVO {{ items.deviceId }}</p>
                                               <p class="text-center">{{ items.name }} </p>
                                           </a>
-                                          {% if device_id in device_warnings and items.status == 'activo' %}
-                                            <div class="warning">{{ device_warnings }}</div>
-                                          {% endif %}
+                                      </div>
+                                      <div id="warning-container">
+                                        {% if device_warnings|get_item:device_id == "Sin envío de datos" %}
+                                            <p>{{ device_warnings|get_item:device_id }}</p>
+                                        {% endif %}
                                       </div>
                                     </form>
                                 </div>
@@ -101,7 +102,7 @@
                         <form action="" method="POST">
                           {% csrf_token %}
                         <input value{{turno}} name="turno" class="d-none" style="height: 75px;">
-                        <input type="submit"   value="FIN DE TURNO" class="form-control  btn  btn-primary" id="floatingInput" style="height: 75px; font-size: 20px;">
+                        <input type="submit"  value="FIN DE TURNO" class="form-control  btn  btn-primary" id="floatingInput" style="height: 75px; font-size: 20px;">
                         <form>
                     </div>
                   
@@ -115,6 +116,25 @@
                 </div>
 
             </div>
+            <script>
+              let deviceWarnings = JSON.parse('{{ device_warnings|safe }}');
+              let reloadInterval = 320000; // 320 segundos en milisegundos
+            
+              function hasActiveWarnings() {
+                for (let deviceId in deviceWarnings) {
+                  if (deviceWarnings[deviceId] === "Sin envío de datos") {
+                    return true;
+                  }
+                }
+                return false;
+              }
+            
+              if (hasActiveWarnings()) {
+                setInterval(function() {
+                  window.location.reload();
+                }, reloadInterval);
+              }
+            </script>
               
 
            

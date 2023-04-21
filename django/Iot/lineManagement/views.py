@@ -2,25 +2,24 @@ from datetime import date
 from django.contrib.auth import logout
 
 from django.utils import timezone
-
 from django.shortcuts import render, redirect
-
 from .models import user as loginUser
 from .models import device_maintance
 from .models import lines_maintance
 from datetime import date, datetime, timedelta
 from django.utils import timezone
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
-
 from login.models import user as loginUser
-from .models import config, lines, devices as odevice, device_maintance, line_status as lstatus, device_status as dstatus, device_production as dev_prod
+from .models import config, lines, devices as odevice, device_maintance, line_status as lstatus, device_status as dstatus, device_production as dev_prod, graphs
 from django.db.models import Q
 from django.db import models
 import paho.mqtt.client as mqtt
 import json
 
 
+def select (request):
+    return render (request, 'lineManagement/select.html')
 
 def control(request):
     nameLines = request.session.get('namelines', [])
@@ -44,12 +43,33 @@ def control(request):
                 device_status.status = 'Terminado'
                 device_status.endTime = timezone.now()
                 device_status.save()
+                # Obtener el objeto dev_maintenance
                 dev_maintenance = device_maintance.objects.filter(
                     deviceId=device.id, endTime__isnull=True).first()
-                dev_maintenance.endTime = timezone.now()
-                dev_maintenance.save()
-            logout(request)
-            return redirect('login')
+
+                # Verificar si dev_maintenance tiene un valor antes de actualizarlo
+                if dev_maintenance:
+                    dev_maintenance.endTime = timezone.now()
+                    dev_maintenance.save()
+            
+                # Verificar si la tabla device_production tiene datos antes de transferirlos a la tabla graphs
+                if dev_prod.objects.exists():
+                    device_production_data = dev_prod.objects.all()
+                    for data in device_production_data:
+                        graphs.objects.create(
+                            deviceId=data.deviceId,
+                            shift=data.shift,
+                            lineid=data.lineid,
+                            production_data=data.production_data,
+                            created_at=data.created_at,
+                            date=data.date
+                        )
+
+                    # Borrar todos los datos de la tabla device_production
+                    dev_prod.objects.all().delete()
+        logout(request)
+        return HttpResponseRedirect('./select')
+       
 
     turno = request.session.get('turno')
     iduser = request.session.get('userid')
@@ -149,7 +169,6 @@ def control(request):
 
     # Iniciar el bucle para recibir mensajes
     mqtt_client.loop_start()"""
-    reload_page = False
     # Crear un parámetro de medición que opere en la tabla temporal para determinar si está recibiendo datos o nó en un período de tiempo de 320 segundos
     device_warnings = {}
 
@@ -158,14 +177,14 @@ def control(request):
 
             if last_dev_prod_entry:
                 last_production_data_time_str = last_dev_prod_entry.created_at.split(',')[-1]
-                last_production_data_time = datetime.strptime(last_production_data_time_str, '%H:%M:%S').time()
+                last_production_data_time = datetime.strptime(last_production_data_time_str, '%Y-%m-%d %H:%M:%S').time()
                 current_time = timezone.now().time()
                 time_difference = datetime.combine(date.min, current_time) - datetime.combine(date.min, last_production_data_time)
                 total_seconds_difference = time_difference.total_seconds()
 
-                if total_seconds_difference> timedelta(seconds=320):
+                if total_seconds_difference > 320.0:
                     device_warnings[device.id] = "Sin envío de datos"
-                    reload_page = True #Cuando el condicional se cumple, se envía una señal al cliente para recargar la página y así que aparezca la advertencia
+
 
     return render(request, "lineManagement/control.html", {'turno': turno, 
                                                            "name": name, "lineas": lineas, 
@@ -174,8 +193,7 @@ def control(request):
                                                            "device_items": device_items, 
                                                            "device_names": device_names, 
                                                            "status": line_status, 
-                                                           "device_warnings": device_warnings, 
-                                                           "reload_page": reload_page})
+                                                           "device_warnings": json.dumps(device_warnings), })
 """
 def on_message(client, userdata, message): #Message es un bjeto que contiene toda la información del mensaje recibido, el tópico, el contenido (payload), etc
  # Extraer el deviceId del tópico

@@ -7,6 +7,5 @@ urlpatterns = [
     path('linemanagement/', include('lineManagement.urls')),
     path('data/', include('graphs.urls')),
 
-    # path('linemanagement/', include('lineManagement.urls')),
 
 ]

@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-c0etah0lsvn41@nji(uymkx-*o9t96v0fvh*fn$q*7b-acs9s=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -80,7 +80,7 @@ WSGI_APPLICATION = "Iot.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-""""
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -91,8 +91,7 @@ DATABASES = {
         'PORT': '3307',
     }
 }
-"""
-DATABASES = {
+"""DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
         "NAME": "iot",
@@ -101,8 +100,7 @@ DATABASES = {
         "HOST": "localhost",
         "PORT": "3306",
     }
-}
-
+}"""
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 

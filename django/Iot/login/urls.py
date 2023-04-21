@@ -8,3 +8,4 @@ urlpatterns = [
     path('login/', views.login_user, name="login"),
     path('shift/', login_required(views.start_shift), name="shift")
 ]
+urlpatterns = list(urlpatterns)
