@@ -1,5 +1,5 @@
 from datetime import date
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.contrib.auth.hashers import make_password
 # Create your views here.
 from django.contrib.auth import authenticate, login, logout
@@ -34,12 +34,12 @@ def login_user(request):
             u.save()
 
             # redirigir a la proxima pagina
-            return HttpResponseRedirect('/authenticate/shift/')
+            return HttpResponseRedirect('../shift')
 
         else:
             messages.success(
                 request, ("Credenciales incorrectas"))
-            return redirect('login')
+            return HttpResponseRedirect('../shift')
     else:  # sino esta logueado redirija a la pagina
         return render(request, 'login/login.html', {})
 
@@ -92,7 +92,7 @@ def start_shift(request):
             pass
 
         # Redireccionar a los del ian
-        return redirect("../../linemanagement/home")
+        return HttpResponseRedirect("../../linemanagement/home")
 
     iduser = request.session.get('userid')
     responsable = loginUser.objects.filter(iduser=iduser).first()

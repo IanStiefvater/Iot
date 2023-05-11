@@ -65,8 +65,7 @@
         .responsivo5 {
             display: flex;
             width: 100%;
-            margin-top: 80px;
-            margin-bottom: 80px;
+            
         }
         @media (max-width: 1254px) {    
             .responsive {
@@ -118,6 +117,8 @@
             }
             .responsivo5 {
                 flex-direction: column;
+                margin-top: 80px;
+                margin-bottom: 80px;
             }
             .responsivo3 {
                 display: none;
@@ -157,7 +158,7 @@
         <div class="">
             <form method="post" action="">
                 {% csrf_token %}
-                <div class="col-11 py-5 d-flex justify-content-center mx-auto p-3  mb-3" style="border:1px solid rgb(201, 201, 201);border-radius: 10px;">
+                <div class="col-11 py-5 d-flex justify-content-center mx-auto p-3  mb-3" style="border:1px solid rgb(201, 201, 201);border-radius: 10px; box-shadow: 0 0 4px 0 rgba(0,0,0,.14), 0 3px 4px 0 rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2);">
                     <div class="d-flex flex-column align-items-center col-6">
                         <input type="hidden" name="line_id" value="{{ line_id }}">
                         <input type="hidden" name="device_id" value="{{ device_id }}">
@@ -185,7 +186,7 @@
                         <input type="text" name="shift" value="{{shift}}" disabled class="col-6 text-center" id="floatingInput" placeholder="{{name}}" style="font-size: 25px; color: white; background-color: transparent; border: none;">
                     </div>
                 </div>
-                <div class="mx-auto col-11 p-3  mb-3" style="border:1px solid rgb(201, 201, 201);border-radius: 10px;">
+                <div class="mx-auto col-11 p-3  mb-3" style="border:1px solid rgb(201, 201, 201);border-radius: 10px; box-shadow: 0 0 4px 0 rgba(0,0,0,.14), 0 3px 4px 0 rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2);">
                     <div class="row">
                         <div class="col-md-6 col-sm-12 mt-3 mb-3">
                             {% if device_status == 'activo' %}

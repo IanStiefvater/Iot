@@ -12,7 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from login.models import user as loginUser
 from .models import config, lines, devices as odevice, device_maintance, line_status as lstatus, device_status as dstatus, device_production as dev_prod, graphs
-from django.db.models import Q
+from django.db.models import Q, Count, Sum, Max
 from django.db import models
 import paho.mqtt.client as mqtt
 import json
@@ -51,22 +51,32 @@ def control(request):
                 if dev_maintenance:
                     dev_maintenance.endTime = timezone.now()
                     dev_maintenance.save()
+                    
             
-                # Verificar si la tabla device_production tiene datos antes de transferirlos a la tabla graphs
-                if dev_prod.objects.exists():
-                    device_production_data = dev_prod.objects.all()
-                    for data in device_production_data:
-                        graphs.objects.create(
-                            deviceId=data.deviceId,
-                            shift=data.shift,
-                            lineid=data.lineid,
-                            production_data=data.production_data,
-                            created_at=data.created_at,
-                            date=data.date
-                        )
+            if dev_prod.objects.exists():
+                # Realizar los cálculos de producción total y capacidad máxima
+                line_results = dev_prod.objects.values("deviceId_id", "deviceId__name").annotate(
+                    total_production=Sum("production_data"),
+                    max_production=Max("production_data"),
+                    periods_count=Count("deviceId_id"),
+                ).order_by("deviceId_id")
 
+                for result in line_results:
+                    device_instance = odevice.objects.get(id=result["deviceId_id"])
+
+                    device_production_data = dev_prod.objects.filter(deviceId_id=result["deviceId_id"]).first()
+
+                    graphs.objects.create(
+                        deviceId=device_instance,
+                        shift=device_production_data.shift,
+                        lineid=device_production_data.lineid,
+                        total_production=result["total_production"],
+                        potential_production=result["max_production"] * result["periods_count"],
+                        date=device_production_data.date,
+                        name=result["deviceId__name"],
+                    )
                     # Borrar todos los datos de la tabla device_production
-                    dev_prod.objects.all().delete()
+                    # dev_prod.objects.all().delete()
         logout(request)
         return HttpResponseRedirect('./select')
        
@@ -105,7 +115,7 @@ def control(request):
             if device_status:
                 device_info = device.name
                 device_estado = device_status.status
-               # print(f"{device_info} cuyo id es {device.id}")
+                print(f"{device_info} cuyo id es {device.id}")
 
             items = []
             if device_status and device_status.status == "activo":
@@ -208,20 +218,15 @@ def on_message(client, userdata, message): #Message es un bjeto que contiene tod
     shift = data["shift"]
     production_data = data["production_data"]
 
-    # Buscar si ya existe una entrada en la tabla para este dispositivo y turno
-    dev_prod_entry = dev_prod.objects.filter(deviceId=device_id, shift=shift).first()
+    device_instance = dstatus.objects.get(id=device_id)
 
-    # Si no existe una entrada, crear una nueva
-    if dev_prod_entry is None:
-        device_instance = dstatus.objects.get(id=device_id)
-        dev_prod_entry = dev_prod(deviceId=device_instance, lineid=line_id, shift=shift, production_data=str(production_data),created_at=timezone.now().strftime('%H:%M:%S' ), date=timezone.now().date())
-        dev_prod_entry.set_date_from_status()
-        dev_prod_entry.save()
-    else:
-        # Si existe una entrada, agregar los nuevos datos de producción separados por comas
-        dev_prod_entry.production_data += f", {production_data}"
-        dev_prod_entry.created_at += f",{timezone.now().strftime('%H:%M:%S')}" #agrega el snapshot preciso en el que ingresó el dato de producción
-        dev_prod_entry.save()
+    # Buscar el nombre del dispositivo en la tabla devices
+    device_name = devices.objects.get(id=device_id).name
+
+    # Crear una nueva entrada en la tabla dev_prod con el nombre del dispositivo
+    dev_prod_entry = dev_prod(deviceId=device_instance, name=device_name, lineid=line_id, shift=shift, production_data=str(production_data),created_at=timezone.now().strftime('%H:%M:%S' ), date=timezone.now().date())
+    dev_prod_entry.set_date_from_status()
+    dev_prod_entry.save()
 
     print(f"Mensaje recibido: {message.payload.decode()} en el tópico {message.topic}")
 
@@ -295,7 +300,7 @@ def maintenance(request):
             status_device.save()
             # request.session sirve para almacenar y recuperar datos específicos del usuario durante múltiples solicitudes (requests)
             request.session['device_maintenance_id'] = device.id
-            return redirect('home')
+            return HttpResponseRedirect('./home')
 
         elif action == 'ARRANCAR':
             # El arranque solo envía el endTime a las tablas, para eso recupera su id que se extranjo de request.session y rellena esa columna vacía que se envía al principío en detención
@@ -316,7 +321,7 @@ def maintenance(request):
                     device_maintenance_obj2.endTime = end_time
                     device_maintenance_obj2.save()
                     del request.session['device_maintenance_id']
-            return redirect('home')
+            return HttpResponseRedirect('./home')
 
     Nota = device_maintance.objects.filter(deviceId=device_id)
     # Crear una lista vacía para almacenar las notas

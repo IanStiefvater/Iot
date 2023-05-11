@@ -66,7 +66,9 @@ class config(models.Model):
 
 class device_production(models.Model):
     deviceId = models.ForeignKey(devices, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200, null=True, blank=True)
     shift = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
     lineid = models.IntegerField(default=0)
     production_data = models.IntegerField()
     created_at = models.CharField(max_length=250)
@@ -85,10 +87,11 @@ class device_production(models.Model):
 
 class graphs(models.Model):
     deviceId = models.ForeignKey(devices, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200, null=True, blank=True)
     shift = models.CharField(max_length=200)
     lineid = models.IntegerField(default=0)
-    production_data = models.IntegerField()
-    created_at = models.CharField(max_length=250)
+    total_production = models.IntegerField()
+    potential_production = models.IntegerField()
     date = models.DateField()
 
     def set_date_from_status(self):
