@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "graphs",
     "lineManagement",
     "login",
+    'django_crontab',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -150,3 +151,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 LOGIN_URL = "/authenticate/login/"
+CRONJOBS = [
+    ('0 0 * * *', 'lineManagement.views.rollover_shifts_and_maintenance')
+]

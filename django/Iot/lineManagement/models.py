@@ -42,8 +42,17 @@ class device_maintance(models.Model):
     point = models.CharField(max_length=200)
     lineid = models.IntegerField(default=0)
     notes = models.TextField()
+    shift = models.CharField(max_length=200)
     starTime = models.DateTimeField(default=timezone.now)
     endTime = models.DateTimeField(null=True, blank=True)
+
+class total_maintenance(models.Model):
+    deviceId = models.IntegerField()
+    point = models.CharField(max_length=200)
+    lineid = models.IntegerField(default=0)
+    shift = models.CharField(max_length=200)
+    totalTime = models.FloatField()
+    date = models.DateField(null=True, blank=True)
 
 
 class line_status(models.Model):
@@ -54,9 +63,6 @@ class line_status(models.Model):
     starTime = models.DateTimeField(default=timezone.now)
     endTime = models.DateTimeField(null=True, default=None)
     status = models.CharField(max_length=255, default="activo")
-    timeMaintance = models.TimeField(
-        auto_now=False, auto_now_add=False, null=True, default=None
-    )
     notes = models.TextField()
 
 

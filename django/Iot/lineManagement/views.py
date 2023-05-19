@@ -1,18 +1,22 @@
+import datetime
 from datetime import date
 from django.contrib.auth import logout
-
 from django.utils import timezone
 from django.shortcuts import render, redirect
 from .models import user as loginUser
 from .models import device_maintance
 from .models import lines_maintance
 from datetime import date, datetime, timedelta
-from django.utils import timezone
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from login.models import user as loginUser
-from .models import config, lines, devices as odevice, device_maintance, line_status as lstatus, device_status as dstatus, device_production as dev_prod, graphs
-from django.db.models import Q, Count, Sum, Max
+from .models import config, lines, devices as odevice, device_maintance, line_status as lstatus, device_status as dstatus, device_production as dev_prod, graphs, total_maintenance as totalM
+from django.db.models import Q, Count, Sum, Max, F
+from datetime import timedelta
+from django.utils.dateparse import parse_datetime
+from django.db.models.functions import Cast
+from django.db.models import DateField
+from django.db.models.fields import DurationField
 from django.db import models
 import paho.mqtt.client as mqtt
 import json
@@ -52,7 +56,7 @@ def control(request):
                     dev_maintenance.endTime = timezone.now()
                     dev_maintenance.save()
                     
-            
+            """
             if dev_prod.objects.exists():
                 # Realizar los cálculos de producción total y capacidad máxima
                 line_results = dev_prod.objects.values("deviceId_id", "deviceId__name").annotate(
@@ -74,9 +78,36 @@ def control(request):
                         potential_production=result["max_production"] * result["periods_count"],
                         date=device_production_data.date,
                         name=result["deviceId__name"],
-                    )
+                    )"""
                     # Borrar todos los datos de la tabla device_production
                     # dev_prod.objects.all().delete()
+        
+            if device_maintance.objects.exists():
+                maintenance_results = device_maintance.objects.values("deviceId", "point", "lineid", "shift", 
+                                                                    date_start=Cast('starTime', DateField()),
+                                                                    date_end=Cast('endTime', DateField())
+                                                                    ).annotate(
+                    total_time=Sum(F('endTime') - F('starTime')),
+                ).order_by("deviceId", "point")
+
+                for result in maintenance_results:
+                    # Convertir timedelta a segundos
+                    total_seconds = result["total_time"].total_seconds()
+
+                    # Formatear la fecha de inicio y fin como cadena
+                    date_start = result['date_start'].strftime('%Y-%m-%d')
+
+
+                    totalM.objects.create(
+                        deviceId=result["deviceId"],
+                        point=result["point"],
+                        lineid=result["lineid"],
+                        shift=result["shift"],
+                        totalTime=total_seconds,
+                        date=date_start,
+                    )
+                     # Borrar todos los datos de la tabla device_maintance
+                    # device_maintance.objects.all().delete()"""
         logout(request)
         return HttpResponseRedirect('./select')
        
@@ -292,7 +323,7 @@ def maintenance(request):
             # Captura el momento exacto en donde se envía el formulario (horas, minutos, segundos)
 
             device = device_maintance(
-                deviceId=device_id, point=option, lineid=lineId, notes=notas, starTime=timezone.now())
+                deviceId=device_id, point=option, lineid=lineId, notes=notas, shift=shift, starTime=timezone.now())
             device.save()
             status_device = dstatus.objects.filter(
                 deviceId_id=device_id, endTime__isnull=True).first()
@@ -338,3 +369,61 @@ def maintenance(request):
 
 def error_404_view(request, exception):
     return render(request, 'error.html', {})
+
+
+
+def rollover_shifts_and_maintenance():
+    midnight_today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    midnight_tomorrow = midnight_today + timedelta(days=1)
+
+    # Rollover device_status shifts
+    active_device_statuses = dstatus.objects.filter(Q(endTime__isnull=True) | Q(endTime__gt=midnight_tomorrow)).exclude(status='Terminado')
+    for active_status in active_device_statuses:
+        # End the current shift
+        active_status.endTime = midnight_today
+        active_status.save()
+        
+        # Start a new shift
+        dstatus.objects.create(
+            deviceId=active_status.deviceId,
+            shift=active_status.shift,
+            data=active_status.data,
+            lineid=active_status.lineid,
+            starTime=midnight_tomorrow,
+            status=active_status.status
+        )
+
+    # Rollover line_status shifts
+    active_line_statuses = lstatus.objects.filter(Q(endTime__isnull=True) | Q(endTime__gt=midnight_tomorrow)).exclude(status='Terminado')
+    for active_status in active_line_statuses:
+        # End the current shift
+        active_status.endTime = midnight_today
+        active_status.save()
+        
+        # Start a new shift
+        lstatus.objects.create(
+            lineName=active_status.lineName,
+            amountDevices=active_status.amountDevices,
+            shift=active_status.shift,
+            userId=active_status.userId,
+            starTime=midnight_tomorrow,
+            status=active_status.status,
+            notes=active_status.notes
+        )
+
+    # Rollover device_maintenance tasks
+    active_maintenance_tasks = device_maintance.objects.filter(Q(endTime__isnull=True) | Q(endTime__gt=midnight_tomorrow))
+    for active_task in active_maintenance_tasks:
+        # End the current task
+        active_task.endTime = midnight_today
+        active_task.save()
+        
+        # Start a new task
+        device_maintance.objects.create(
+            deviceId=active_task.deviceId,
+            point=active_task.point,
+            lineid=active_task.lineid,
+            notes=active_task.notes,
+            shift=active_task.shift,
+            starTime=midnight_tomorrow
+        )
