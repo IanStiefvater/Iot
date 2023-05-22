@@ -110,3 +110,4 @@ class graphs(models.Model):
         if status:
             # Extraer la fecha del campo starTime
             self.date = status.starTime.date()
+

@@ -81,7 +81,6 @@ def control(request):
                     )"""
                     # Borrar todos los datos de la tabla device_production
                     # dev_prod.objects.all().delete()
-        
             if device_maintance.objects.exists():
                 maintenance_results = device_maintance.objects.values("deviceId", "point", "lineid", "shift", 
                                                                     date_start=Cast('starTime', DateField()),
