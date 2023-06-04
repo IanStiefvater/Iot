@@ -106,7 +106,7 @@ def desempeño(request):
             total_time_for_devices.append({
                 "device_id": device_id,
                 "device_name": device_name,
-                "line_id": line_id,
+                "lineId": line_id,
                 "total_time": device_total_time,
                 "date": date.strftime("%Y-%m-%d"),
                 "shift": shift
@@ -143,7 +143,7 @@ def desempeño(request):
             total_time_for_device_statuses.append({
                 "device_id": result.deviceId_id,
                 "device_name": device_name,
-                "line_id": line_id,
+                "lineId": line_id,
                 "total_time": total_seconds,
                 "date": date_start.strftime("%Y-%m-%d"),
                 "shift": shift_start
@@ -170,7 +170,7 @@ def desempeño(request):
                 "date": date_start.strftime("%Y-%m-%d"),
                 "shift": shift_start
             })
-    print(total_time_for_device_statuses)
+    print(total_time_for_line_statuses)
    
     
     return render(request, "graphs/desempeño.html", {

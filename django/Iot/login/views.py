@@ -100,8 +100,10 @@ def start_shift(request):
     name = responsable.name
 
     lineas = list(lines.objects.all().values('name'))
+    lineas_devices = {line['name']: list(devices.objects.filter(line=line['name']).values('name')) for line in lineas}
+    print(lineas_devices)
     request.session['lineas'] = lineas
-    return render(request, "login/turno.html", {"name": name, "lineas": lineas})
+    return render(request, "login/turno.html", {"name": name, "lineas": lineas, "lineas_devices": lineas_devices})
 
 
 def error_404_view(request, exception):

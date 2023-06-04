@@ -47,6 +47,65 @@
                         </div>
                         <div class="col-12 mt-5" style=" display: flex; flex-direction: row; gap: 3rem; justify-content: center;">
                             <div class="col-md-4">
+                              <button type="button" onclick="toggleFormVisibility()">Editar Líneas y Dispositivos</button>
+                            </div>
+                            <div class="popup-container" style="display:none">
+                              <div class="popup">
+                                <button type="button" onclick="toggleNewLineForm()">Agregar Nueva Línea de Producción</button>
+                                <button type="button" onclick="toggleModifyData()">Modificar Datos</button> <!-- Nuevo botón "Modificar Datos" -->
+                                </div>
+
+                                <div id="newLineForm" style="display:none;">
+                                  <input type="text" placeholder="Nombre de línea">
+                                  <button type="button" onclick="addNewDevice()">Agregar nuevo dispositivo</button>
+                                  <button type="button" onclick="saveLine()">Guardar</button>
+                                </div>
+
+                                <div id="modifyDataForm" style="display:none;"> <!-- Nuevo formulario para modificar datos -->
+                                  <button type="button" onclick="toggleModifyLineName()">Modificar nombre de línea</button>
+                                  <button type="button" onclick="toggleModifyDeviceName()">Modificar nombre de dispositivo</button>
+                                </div>
+                                <div id="modifyLineNameForm" style="display:none;"> <!-- Formulario para modificar nombre de línea -->
+                                  <select id="lineDropdownModify" onchange="toggleLineNameInput(this.value)">
+                                    <option value="">Seleccionar línea</option>
+                                    {% for line in lineas %}
+                                    <option value="{{ line.name }}">{{ line.name }}</option>
+                                    {% endfor %}
+                                  </select>
+                                  <div id="lineNameInput" style="display:none;">
+                                    <input type="text" placeholder="Nuevo nombre de línea">
+                                    <button type="button" onclick="saveModifiedLineName()">Guardar cambios</button>
+                                  </div>
+                                </div>
+
+                                <div id="modifyDeviceNameForm" style="display:none;"> <!-- Formulario para modificar nombre de dispositivo -->
+                                  <select id="lineDropdownModifyDevice" onchange="toggleDeviceDropdown(this.value)">
+                                    <option value="">Seleccionar línea</option>
+                                    {% for line in lineas %}
+                                    <option value="{{ line.name }}">{{ line.name }}</option>
+                                    {% endfor %}
+                                  </select>
+                                  <div id="deviceDropdownModifyDevice" style="display:none;">
+                                    <select id="deviceDropdownModify" onchange="toggleDeviceNameInput(this.value)">
+                                      <option value="">Seleccionar dispositivo</option>
+                                      <!-- Los dispositivos se llenarán dinámicamente con JavaScript -->
+                                    </select>
+                                  </div>
+                                </div>
+
+                                
+                                  <div id="deviceNameInput" style="display:none;">
+                                    <input type="text" placeholder="Nuevo nombre de dispositivo" id="newDeviceNameInput">
+                                    <button type="button" onclick="saveModifiedDeviceName()">Guardar cambios</button>
+                                  </div>
+                                </div>
+                              </div>
+                            <div class="col-md-4 text-center">
+                              <button class="btn btn-secondary px-4 py-2" id="clock"></button>
+                            </div>
+                          </div>
+                        <div class="col-12 mt-5" style=" display: flex; flex-direction: row; gap: 3rem; justify-content: center;">
+                            <div class="col-md-4">
                               <button type="submit" class="btn btn-primary px-4 py-2">Iniciar Turno</button>
                             </div>
                             <div class="col-md-4 text-center">
@@ -66,12 +125,187 @@
                           
                             setInterval(updateClock, 1000);
                           </script>
+
+                          
                     </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+      function toggleDeviceDropdown(lineValue) {
+        var deviceDropdown = document.getElementById("deviceDropdownModifyDevice");
+        var deviceNameInput = document.getElementById("deviceNameInput");
+
+        if (lineValue !== "") {
+          deviceDropdown.style.display = "block";
+          deviceNameInput.style.display = "none";
+        } else {
+          deviceDropdown.style.display = "none";
+          deviceNameInput.style.display = "none";
+        }
+      }
+
+      function toggleDeviceNameInput(deviceValue) {
+        var deviceNameInput = document.getElementById("deviceNameInput");
+
+        if (deviceValue !== "") {
+          deviceNameInput.style.display = "block";
+        } else {
+          deviceNameInput.style.display = "none";
+        }
+      }
+
+      function saveModifiedDeviceName() {
+        var newDeviceName = document.getElementById("newDeviceNameInput").value;
+        // Aquí puedes realizar las acciones necesarias para guardar los cambios del nombre del dispositivo
+        console.log("Nuevo nombre de dispositivo:", newDeviceName);
+      }
+    </script>
+    <script>
+      var lineas_devices = {{ lineas_devices | escapejs | safe }};
+
+    function toggleDeviceDropdown(lineName) {
+      var deviceSelect = document.getElementById("deviceDropdownModify");
+      // Clear any existing options
+      while (deviceSelect.firstChild) {
+        deviceSelect.removeChild(deviceSelect.firstChild);
+      }
+
+      // Add an empty option
+      var option = document.createElement("option");
+      option.value = "";
+      option.text = "Seleccionar dispositivo";
+      deviceSelect.appendChild(option);
+
+      // Add the devices for this line
+      if (lineName in lineas_devices) {
+        for (var i = 0; i < lineas_devices[lineName].length; i++) {
+          var deviceName = lineas_devices['linea 1'][0].name;
+          console.log(lineas_devices);
+          var option = document.createElement("option");
+          option.value = deviceName;
+          option.text = deviceName;
+          deviceSelect.appendChild(option);
+        }
+      }
+    }
+    </script>
+    <script>
+      var deviceCount = 0;
+
+      function toggleFormVisibility() {
+        var formContainer = document.querySelector('.popup-container');
+        formContainer.style.display = formContainer.style.display === 'none' ? 'block' : 'none';
+      }
+
+
+      function toggleNewLineForm() {
+        var newLineForm = document.getElementById('newLineForm');
+        newLineForm.style.display = newLineForm.style.display === 'none' ? 'block' : 'none';
+        document.getElementById('lineSelection').style.display = 'none';
+        document.getElementById('modifyDataForm').style.display = 'none'; // Ocultar formulario de modificación de datos
+        document.getElementById('modifyLineNameForm').style.display = 'none'; // Ocultar formulario de modificación de nombre de línea
+        document.getElementById('modifyDeviceNameForm').style.display = 'none'; // Ocultar formulario de modificación de nombre de dispositivo
+      }
+
+      function toggleModifyData() {
+        var modifyDataForm = document.getElementById('modifyDataForm');
+        modifyDataForm.style.display = modifyDataForm.style.display === 'none' ? 'block' : 'none';
+        document.getElementById('lineSelection').style.display = 'none';
+        document.getElementById('newLineForm').style.display = 'none';
+        document.getElementById('modifyLineNameForm').style.display = 'none'; // Ocultar formulario de modificación de nombre de línea
+        document.getElementById('modifyDeviceNameForm').style.display = 'none'; // Ocultar formulario de modificación de nombre de dispositivo
+      }
+
+      function toggleModifyLineName() {
+        var modifyLineNameForm = document.getElementById('modifyLineNameForm');
+        modifyLineNameForm.style.display = modifyLineNameForm.style.display === 'none' ? 'block' : 'none';
+        document.getElementById('modifyDeviceNameForm').style.display = 'none'; // Ocultar formulario de modificación de nombre de dispositivo
+      }
+
+      function toggleLineNameInput(line) {
+        var lineNameInput = document.getElementById('lineNameInput');
+        lineNameInput.style.display = line ? 'block' : 'none';
+      }
+
+      function saveModifiedLineName() {
+        var selectedLine = document.getElementById('lineDropdownModify').value;
+        var newLineName = document.querySelector('#lineNameInput input').value;
+        // Actualizar el nombre de la línea en la estructura de datos
+        console.log('Línea modificada:', selectedLine);
+        console.log('Nuevo nombre de línea:', newLineName);
+      }
+
+      function toggleModifyDeviceName() {
+        var modifyDeviceNameForm = document.getElementById('modifyDeviceNameForm');
+        modifyDeviceNameForm.style.display = modifyDeviceNameForm.style.display === 'none' ? 'block' : 'none';
+        document.getElementById('modifyLineNameForm').style.display = 'none'; // Ocultar formulario de modificación de nombre de línea
+      }
+
+      function toggleDeviceNameInput(line) {
+        var deviceNameInput = document.getElementById('deviceNameInput');
+        deviceNameInput.style.display = line ? 'block' : 'none';
+      }
+
+      function saveModifiedDeviceName() {
+        var selectedLine = document.getElementById('lineDropdownModifyDevice').value;
+        var selectedDevice = document.getElementById('deviceDropdownModify').value;
+        var newDeviceName = document.querySelector('#deviceNameInput input').value;
+        // Actualizar el nombre del dispositivo en la estructura de datos
+        console.log('Línea modificada:', selectedLine);
+        console.log('Dispositivo modificado:', selectedDevice);
+        console.log('Nuevo nombre de dispositivo:', newDeviceName);
+      }
+
+      function toggleDeviceSelection(line) {
+        var deviceSelection = document.getElementById('deviceSelection');
+        deviceSelection.style.display = line ? 'block' : 'none';
+      }
+
+      function saveDevice() {
+        var deviceName = document.querySelector('#deviceForm input').value;
+        // Guardar el nombre del dispositivo en alguna estructura de datos
+        console.log('Dispositivo guardado:', deviceName);
+      }
+
+      function addNewDevice() {
+        var newDeviceInput = document.createElement('input');
+        newDeviceInput.type = 'text';
+        newDeviceInput.placeholder = 'Nombre de dispositivo';
+
+        var newLineForm = document.getElementById('newLineForm');
+
+        // Cerrar los inputs generados previamente
+        var existingDevices = document.querySelectorAll('#newLineForm input:not(:first-child)');
+        existingDevices.forEach(function(device) {
+          newLineForm.removeChild(device);
+        });
+
+        // Agregar el nuevo input de dispositivo
+        newLineForm.insertBefore(newDeviceInput, newLineForm.lastChild.previousSibling);
+
+        deviceCount++; // Incrementar el contador de dispositivos
+      }
+
+      function saveLine() {
+        var lineName = document.querySelector('#newLineForm input:first-child').value;
+        var deviceInputs = document.querySelectorAll('#newLineForm input:not(:first-child)');
+        var devices = Array.from(deviceInputs).map(input => input.value);
+        // Guardar el nombre de la línea y los dispositivos en alguna estructura de datos
+        console.log('Línea guardada:', lineName);
+        console.log('Dispositivos:', devices);
+      }
+
+      function saveLineSelection() {
+        var selectedLine = document.getElementById('lineDropdown').value;
+        var selectedDevice = document.getElementById('deviceDropdown').value;
+        // Guardar la selección de línea y dispositivo en alguna estructura de datos
+        console.log('Línea seleccionada:', selectedLine);
+        console.log('Dispositivo seleccionado:', selectedDevice);
+      }
+    </script>
     
 </body>
 </html>
