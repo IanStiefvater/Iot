@@ -8,6 +8,7 @@
     <title>Login</title>
 </head>
 <body>
+  {{ lineas_devices | json_script:"lineasDevices" }}
     <div class="container mt-5">
         <div class="row">
             <div class="col-12 col-md-6 offset-md-3">
@@ -79,6 +80,7 @@
                                 </div>
 
                                 <div id="modifyDeviceNameForm" style="display:none;"> <!-- Formulario para modificar nombre de dispositivo -->
+                                  
                                   <select id="lineDropdownModifyDevice" onchange="toggleDeviceDropdown(this.value)">
                                     <option value="">Seleccionar línea</option>
                                     {% for line in lineas %}
@@ -86,10 +88,10 @@
                                     {% endfor %}
                                   </select>
                                   <div id="deviceDropdownModifyDevice" style="display:none;">
-                                    <select id="deviceDropdownModify" onchange="toggleDeviceNameInput(this.value)">
-                                      <option value="">Seleccionar dispositivo</option>
-                                      <!-- Los dispositivos se llenarán dinámicamente con JavaScript -->
-                                    </select>
+                                    <script>
+                                      console.log(lineas_devices);
+                                    </script>
+                                    <select id="deviceDropdownModify"></select>                          
                                   </div>
                                 </div>
 
@@ -134,6 +136,9 @@
         </div>
     </div>
     <script>
+      console.log(lineas_devices);
+    </script>
+    <script>
       function toggleDeviceDropdown(lineValue) {
         var deviceDropdown = document.getElementById("deviceDropdownModifyDevice");
         var deviceNameInput = document.getElementById("deviceNameInput");
@@ -164,34 +169,35 @@
       }
     </script>
     <script>
-      var lineas_devices = {{ lineas_devices | escapejs | safe }};
+      var lineas_devices = JSON.parse(document.getElementById('lineasDevices').textContent);
 
-    function toggleDeviceDropdown(lineName) {
-      var deviceSelect = document.getElementById("deviceDropdownModify");
-      // Clear any existing options
-      while (deviceSelect.firstChild) {
-        deviceSelect.removeChild(deviceSelect.firstChild);
+      function populateDevicesDropdown(lineName) {
+          var deviceDropdown = document.getElementById("deviceDropdownModify");
+          // Limpia las opciones existentes
+          while (deviceDropdown.firstChild) {
+              deviceDropdown.removeChild(deviceDropdown.firstChild);
+          }
+          // Agrega una opción vacía
+          var defaultOption = document.createElement("option");
+          defaultOption.value = "";
+          defaultOption.text = "Seleccionar dispositivo";
+          deviceDropdown.appendChild(defaultOption);
+          // Agrega los dispositivos de esta línea
+          if (lineName in lineas_devices) {
+              for (var i = 0; i < lineas_devices[lineName].length; i++) {
+                  var deviceName = lineas_devices[lineName][i].name;
+                  var option = document.createElement("option");
+                  option.value = deviceName;
+                  option.text = deviceName;
+                  deviceDropdown.appendChild(option);
+              }
+          }
       }
 
-      // Add an empty option
-      var option = document.createElement("option");
-      option.value = "";
-      option.text = "Seleccionar dispositivo";
-      deviceSelect.appendChild(option);
-
-      // Add the devices for this line
-      if (lineName in lineas_devices) {
-        for (var i = 0; i < lineas_devices[lineName].length; i++) {
-          var deviceName = lineas_devices['linea 1'][0].name;
-          console.log(lineas_devices);
-          var option = document.createElement("option");
-          option.value = deviceName;
-          option.text = deviceName;
-          deviceSelect.appendChild(option);
-        }
-      }
-    }
-    </script>
+      document.getElementById("lineDropdownModifyDevice").addEventListener("change", function() {
+          populateDevicesDropdown(this.value);
+      });
+  </script>
     <script>
       var deviceCount = 0;
 

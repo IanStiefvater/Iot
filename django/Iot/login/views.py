@@ -13,6 +13,7 @@ from lineManagement.models import lines, devices
 from lineManagement.models import device_maintance, line_status, device_status
 from django.contrib.auth.hashers import make_password
 import paho.mqtt.client as mqtt
+import json
  
 from django.utils import timezone
 
@@ -100,7 +101,7 @@ def start_shift(request):
     name = responsable.name
 
     lineas = list(lines.objects.all().values('name'))
-    lineas_devices = {line['name']: list(devices.objects.filter(line=line['name']).values('name')) for line in lineas}
+    lineas_devices = {line['name']: [device['name'] for device in devices.objects.filter(line=line['name']).values('name')] for line in lineas}
     print(lineas_devices)
     request.session['lineas'] = lineas
     return render(request, "login/turno.html", {"name": name, "lineas": lineas, "lineas_devices": lineas_devices})
