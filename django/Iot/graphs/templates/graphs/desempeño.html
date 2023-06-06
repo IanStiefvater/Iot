@@ -2,173 +2,7 @@
 
 <html>
 <head>
-   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript">
-    google.charts.load('current', {packages: ['corechart', 'bar']});
-    google.charts.setOnLoadCallback(drawCharts);
 
-    function drawCharts() {
-        var total_time_for_lines_maintenance = ({{ total_time_for_lines | safe }});
-        var total_time_for_devices_maintenance = ({{ total_time_for_devices | safe }});
-        var total_time_for_points = ({{ total_time_for_points | safe }});
-        var total_time_for_devices = ({{ total_time_for_device_statuses | safe }});
-        var total_time_for_lines = ({{ total_time_for_line_statuses | safe }});
-
-
-        for (const line of total_time_for_lines) {
-            drawChart1(line.line_name, total_time_for_devices, total_time_for_devices_maintenance);
-            drawChart2(line.line_name, total_time_for_devices_maintenance, total_time_for_points);
-        }
-        drawChart3(total_time_for_lines_maintenance, total_time_for_lines);
-    }
-
-    function drawChart1(id, devices, maintenanceDevices) {
-        var chartData = new google.visualization.DataTable();        
-        chartData.addColumn('string', 'Dispositivo');
-        chartData.addColumn('number', 'Tiempo de Mantenimiento');
-        chartData.addColumn('number', 'Tiempo Total sin Mantenimiento');
-
-
-        
-        // Convertir el id a número (solo si es una cadena en los datos de entrada)
-        var lineId = parseInt(id);
-
-        // Filtramos los dispositivos por el lineId correcto
-        var filteredDevices = devices.filter(device => device.lineId === lineId);
-        console.log(typeof (device && device.lineId)); // Esto imprimirá el tipo de device.lineId solo si device existe
-        console.log(typeof lineId);;
-
-        for (var device of filteredDevices) {
-            var deviceName = device.device_name;
-            var deviceTotalTime = device.total_time;
-
-            // Filtramos los dispositivos de mantenimiento por el nombre y la línea correctos
-           var deviceMaintenance = maintenanceDevices.find(deviceMaint => deviceMaint.device_name === deviceName && deviceMaint.lineId === lineId);
-
-            var deviceMaintenanceTime = deviceMaintenance ? deviceMaintenance.total_time : 0;
-            
-            chartData.addRow([deviceName, deviceMaintenanceTime, deviceTotalTime - deviceMaintenanceTime]);
-        }
-
-        
-
-        var options = {
-            title: 'Tiempo Total de Dispositivo y Mantenimiento - Línea ' + id,
-            chartArea: {width: '50%'},
-            hAxis: {
-                title: 'Tiempo Total',
-                minValue: 0
-            },
-            vAxis: {
-                title: 'Dispositivo'
-            },
-            colors: ['#D97C05', '#FFBE6C'],
-            isStacked: true
-        };
-
-        var chart = new google.visualization.ColumnChart(document.getElementById(`chart1_${id}`));
-        chart.draw(chartData, options);
-    }
-
-
-    function drawChart2(id, maintenanceDevices, total_time_for_points) {
-        var chartData = new google.visualization.DataTable();
-        chartData.addColumn('string', 'Dispositivo');
-        chartData.addColumn('number', 'Set Up');
-        chartData.addColumn('number', 'Mantenimiento');
-        chartData.addColumn('number', 'Imprevisto');
-
-
-        // Convertir el id a número (solo si es una cadena en los datos de entrada)
-        var lineId = parseInt(id);
-
-        // Filtramos los dispositivos por el lineId correcto
-        var filteredMaintenanceDevices = maintenanceDevices.filter(device => device.lineId === lineId);
-
-
-        for (var device of filteredMaintenanceDevices) {
-            var deviceId = device.device_id;
-            var setUpTime = 0;
-            var maintenanceTime = 0;
-            var unforeseenTime = 0;
-
-            for (var point of total_time_for_points) {
-                if (point.deviceId === deviceId && point.lineId === lineId) {
-                    if (point.point_name === 'Set Up') {
-                        setUpTime += parseInt(point.total_time);
-                    } else if (point.point_name === 'Mantenimiento') {
-                        maintenanceTime += parseInt(point.total_time);
-                    } else if (point.point_name === 'Imprevisto') {
-                        unforeseenTime += parseInt(point.total_time);
-                    }
-                }
-            }
-
-            chartData.addRow([device.device_name, setUpTime, maintenanceTime, unforeseenTime]);
-        }
-
-        //console.log(`Datos para chart2_${id}:`, chartData.toJSON());
-
-        var options = {
-            title: 'Desglose de Tiempos de Mantenimiento - Línea ' + id,
-            hAxis: {
-                title: 'Tiempo Total',
-                minValue: 0
-            },
-            vAxis: {
-                title: 'Dispositivo'
-            },
-            colors: ['#3B83A1', '#63A69F', '#734C37'],
-            isStacked: true
-        };
-
-        var chart = new google.visualization.ColumnChart(document.getElementById(`chart2_${id}`));
-        chart.draw(chartData, options);
-    }
-
-
-    function drawChart3(maintenanceLines, lines) {
-        var chartData = new google.visualization.DataTable();
-        chartData.addColumn('string', 'Línea');
-        chartData.addColumn('number', 'Tiempo de Mantenimiento');        
-        chartData.addColumn('number', 'Tiempo sin Mantenimiento');
-        
-
-        for (var line of lines) {
-            var lineName = line.line_name;
-            var lineTotalTime = line.total_time;
-            var lineMaintenanceTime = 0;
-
-            for (var lineMaint of maintenanceLines) {
-                if (lineMaint.line_name === lineName) {
-                    lineMaintenanceTime = lineMaint.total_time;
-                    break;
-                }
-            }
-
-            chartData.addRow([lineName, lineMaintenanceTime, lineTotalTime - lineMaintenanceTime]);
-        }
-
-        //console.log(`Datos para chart3:`, chartData.toJSON());
-
-        var options = {
-            title: 'Tiempo Total de Línea y Mantenimiento',
-            chartArea: {width: '50%'},
-            hAxis: {
-                title: 'Tiempo Total',
-                minValue: 0
-            },
-            vAxis: {
-                title: 'Línea'
-            },
-            colors: ['#8E93A1','#5863F8'],
-            isStacked: true
-        };
-
-        var chart = new google.visualization.ColumnChart(document.getElementById('chart3'));
-        chart.draw(chartData, options);
-    }
-</script>
 
    <style>
       .chart-div {
@@ -182,11 +16,11 @@
          <div id="line_{{ line.line_name }}" class="line-div">
         <h2>Línea {{ line.total_time }}</h2>
 
-        <div id="chart1_{{ line.line_name }}" class="chart-div">
+        <div id="chart1_{{ line.lineId }}" class="chart-div">
             <h3>Tiempo Total de Producción y Mantenimiento por Dispositivo</h3>
         </div>
 
-        <div id="chart2_{{ line.line_name }}" class="chart-div">
+        <div id="chart2_{{ line.lineId }}" class="chart-div">
             <h3>Tiempo Total de Parada por Razón para cada Dispositivo</h3>
         </div>
     </div>
@@ -195,6 +29,162 @@
     <div id="chart3" class="chart-div">
         <h3>Resumen de Todas las Líneas</h3>
     </div>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+        google.charts.load('current', {packages: ['corechart', 'bar']});
+        google.charts.setOnLoadCallback(drawCharts);
+    
+        function drawCharts() {
+            var total_time_for_lines_maintenance = ({{ total_time_for_lines | safe }});
+            var total_time_for_devices_maintenance = ({{ total_time_for_devices | safe }});
+            var total_time_for_points = ({{ total_time_for_points | safe }});
+            var total_time_for_devices = ({{ total_time_for_device_statuses | safe }});
+            var total_time_for_lines = ({{ total_time_for_line_statuses | safe }});
+            console.log(total_time_for_devices_maintenance);
+            console.log(total_time_for_devices);
+            console.log(total_time_for_points);
+    
+    
+            for (const line of total_time_for_lines) {
+                drawChart1(line.lineId, total_time_for_devices, total_time_for_devices_maintenance);
+                drawChart2(line.lineId, total_time_for_devices_maintenance, total_time_for_points);
+            }        
+            drawChart3(total_time_for_lines_maintenance, total_time_for_lines);
+        }
+    
+        function drawChart1(lineId, devices, maintenanceDevices) {
+            var chartData = new google.visualization.DataTable();
+            chartData.addColumn('string', 'Dispositivo');
+            chartData.addColumn('number', 'Tiempo de Mantenimiento');
+            chartData.addColumn('number', 'Tiempo Total sin Mantenimiento');
+        
+            var filteredDevices = devices.filter(device => device.lineId === lineId);
+        
+            for (var device of filteredDevices) {
+                var deviceName = device.device_name;
+                var deviceTotalTime = device.total_time;
+        
+                var deviceMaintenance = maintenanceDevices.find(deviceMaint => deviceMaint.device_name === deviceName && deviceMaint.lineId === lineId);
+        
+                var deviceMaintenanceTime = deviceMaintenance ? deviceMaintenance.total_time : 0;
+                
+                chartData.addRow([deviceName, deviceMaintenanceTime, deviceTotalTime - deviceMaintenanceTime]);
+            }
+        
+            var options = {
+                title: 'Tiempo Total de Dispositivo y Mantenimiento - Línea ' + lineId,
+                chartArea: {width: '50%'},
+                hAxis: {
+                    title: 'Tiempo Total',
+                    minValue: 0
+                },
+                vAxis: {
+                    title: 'Dispositivo'
+                },
+                colors: ['#D97C05', '#FFBE6C'],
+                isStacked: true
+            };
+        
+            var chart = new google.visualization.ColumnChart(document.getElementById(`chart1_${lineId}`));
+            chart.draw(chartData, options);
+        }
+        
+        
+    
+    
+        function drawChart2(lineId, maintenanceDevices, total_time_for_points) {
+            var chartData = new google.visualization.DataTable();
+            chartData.addColumn('string', 'Dispositivo');
+            chartData.addColumn('number', 'Set Up');
+            chartData.addColumn('number', 'Mantenimiento');
+            chartData.addColumn('number', 'Imprevisto');
+        
+            var filteredMaintenanceDevices = maintenanceDevices.filter(device => device.lineId === lineId);
+        
+            for (var device of filteredMaintenanceDevices) {
+                var deviceId = device.device_id;
+                var setUpTime = 0;
+                var maintenanceTime = 0;
+                var unforeseenTime = 0;
+        
+                for (var point of total_time_for_points) {
+                    if (point.deviceId === deviceId && point.lineId === lineId) {
+                        if (point.point_name === 'Set Up') {
+                            setUpTime += parseInt(point.total_time);
+                        } else if (point.point_name === 'Mantenimiento') {
+                            maintenanceTime += parseInt(point.total_time);
+                        } else if (point.point_name === 'Imprevisto') {
+                            unforeseenTime += parseInt(point.total_time);
+                        }
+                    }
+                }
+        
+                chartData.addRow([device.device_name, setUpTime, maintenanceTime, unforeseenTime]);
+            }
+        
+            var options = {
+                title: 'Desglose de Tiempos de Mantenimiento - Línea ' + lineId,
+                hAxis: {
+                    title: 'Tiempo Total',
+                    minValue: 0
+                },
+                vAxis: {
+                    title: 'Dispositivo'
+                },
+                colors: ['#3B83A1', '#63A69F', '#734C37'],
+                isStacked: true
+            };
+        
+            var chart = new google.visualization.ColumnChart(document.getElementById(`chart2_${lineId}`));
+            chart.draw(chartData, options);
+        }
+        
+    
+    
+        function drawChart3(maintenanceLines, lines) {
+            var chartData = new google.visualization.DataTable();
+            chartData.addColumn('string', 'Línea');
+            chartData.addColumn('number', 'Tiempo de Mantenimiento');        
+            chartData.addColumn('number', 'Tiempo sin Mantenimiento');
+            
+    
+            for (var line of lines) {
+                var lineName = line.line_name;
+                var lineTotalTime = line.total_time;
+                var lineMaintenanceTime = 0;
+    
+                for (var lineMaint of maintenanceLines) {
+                    if (lineMaint.line_name === lineName) {
+                        lineMaintenanceTime = lineMaint.total_time;
+                        break;
+                    }
+                }
+    
+                chartData.addRow([lineName, lineMaintenanceTime, lineTotalTime - lineMaintenanceTime]);
+            }
+    
+            //console.log(`Datos para chart3:`, chartData.toJSON());
+    
+            var options = {
+                title: 'Tiempo Total de Línea y Mantenimiento',
+                chartArea: {width: '50%'},
+                hAxis: {
+                    title: 'Tiempo Total',
+                    minValue: 0
+                },
+                vAxis: {
+                    title: 'Línea'
+                },
+                colors: ['#8E93A1','#5863F8'],
+                isStacked: true
+            };
+    
+            var chart = new google.visualization.ColumnChart(document.getElementById('chart3'));
+            chart.draw(chartData, options);
+        }
+    }
+    </script>
 </body>
 </html>
 
