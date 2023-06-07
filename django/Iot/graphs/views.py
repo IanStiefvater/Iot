@@ -159,12 +159,14 @@ def desempeño(request):
         for result in line_status_results:
             # Convert timedelta to seconds
             total_seconds = result.total_time.total_seconds()
+            line_id = oline.objects.get(name=result.lineName).id
 
             # Extract date from starTime
             date_start = result.starTime.date()
             shift_start = result.shift
 
             total_time_for_line_statuses.append({
+                "lineId": line_id,
                 "line_name": result.lineName,
                 "total_time": total_seconds,
                 "date": date_start.strftime("%Y-%m-%d"),

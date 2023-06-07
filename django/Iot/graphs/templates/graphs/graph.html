@@ -32,19 +32,19 @@
           for (const device_data of devices_data) {
             data.addRow([device_data.device_name, device_data.total_production, device_data.potential_production, '']);
           }
-          const options = {
-            width: 1000,
-            height: 600,
-            legend: { position: 'top', maxLines: 3 },
-            bar: { groupWidth: '75%' },
-            isStacked: true,
-            // Cambiar la orientación de las barras
-            hAxis: { title: 'Dispositivos' },
-            vAxis: { title: 'Unidades' },
+          var options = {
+            title: 'Producción total y potencial',
+            chartArea: {width: '70%'},
+            hAxis: {
+                title: 'Dispostivos',
+                minValue: 0
+            },
+            vAxis: {
+                title: 'Unidades'
+            },
             colors: ['#D97C05', '#FFBE6C'],
-          };
-
-          // Cambiar el tipo de gráfico a ColumnChart
+            isStacked: true
+        };
           const chart = new google.visualization.ColumnChart(document.getElementById(`chart_div_${line_id}`));
           chart.draw(data, options);
         }
@@ -64,15 +64,15 @@
         align-items:center;
       }
       li a:hover {
-        background-color: #252525;
+        background-color: #0f3247;
       }
       #hola:hover {
-        background-color: #252525;
+        background-color: #0f3247;
       }
     </style>
 </head>
-<body>
-<header style="width: 100%; height: 100px; background-color: #404040; flex-direction: column !important" >
+<body style="background-color: #9cd6f1">
+<header style="width: 100%; height: 100px; background-color: #425e6f; flex-direction: column !important" >
   <ul class="d-flex" style="height:100%">
     <li class="col-6">
       <h1 class="ms-5" style="color:white; text-align:center">Panel</h1>
@@ -107,11 +107,11 @@
   </div>
   
 
-  <div class="py-5" style="width:100%">
+  <div class="col-12">
     {% for line_data in results %}
-        <div class="d-flex align-items-center justify-content-center" style="flex-direction:column">
+        <div class="col-9 mx-auto d-flex align-items-center justify-content-center" style="flex-direction:column; padding-top: 50px; padding-bottom:50px">
           <div class="col-6 text-center mx-auto card mb-2" style="background-color: #0d3f70;border-radius:10px; box-shadow: 0 0 4px 0 rgba(0,0,0,.14), 0 3px 4px 0 rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2);"><h2 style="margin-top:0.5rem; color:white">Línea {{line_data.line_id}}</h2></div>
-          <div class="mx-auto mb-3 d-flex column justify-content-center col-8" id="chart_div_{{ line_data.line_id }}" style="width: 100%; height: 600px;"></div>
+          <div class="mx-auto mt-5 d-flex column justify-content-center col-12" id="chart_div_{{ line_data.line_id }}" style="border-radius:15px; overflow: hidden; box-shadow: 0 0 4px 0 rgba(0,0,0,.14), 0 3px 4px 0 rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2); height:500px"></div>
         </div>
     {% endfor %}
   </div>
