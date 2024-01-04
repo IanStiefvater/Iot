@@ -1,0 +1,48 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificar Linea</title>
+    <!-- Enlace al archivo CSS externo -->
+    <link rel="stylesheet" href="{% static 'iotestilos.css' %}">
+    <!-- Enlace a Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="cuadro">
+            <img src="{% static '/images/iot.png' %}" alt="Logo" class="logo">
+            <h1>Modificar Linea existente</h1>
+            <h4>Selecciona la línea a Modificar.</h4>
+            <div class="row mt-4">
+                {% for name, amountDevice in lines %}
+               <a href="../mod-devices/{{name}}"> <div class="col-md-4 mb-4">
+                    <div class="cuadro-personalizado">
+                        <div class="row">
+                            <div class="col-md-6 text-center border-right">
+                                <h3 class="titulo-grande texto-cuadro">{{ name }}</h3>
+                            </div>
+                            <div class="col-md-1 separador"></div>
+                            <div class="col-md-4 text-center">
+                                <p class="titulo-chico texto-cuadro">Dispositivos</p>
+                                <p class="titulo-chico texto-cuadro">IOT</p>
+                                <h3 class="titulo-grande texto-cuadro">{{ amountDevice }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div></a>
+                {% endfor %}
+            </div>
+            
+                
+              
+            <div class="text-center mt-3">
+              <a href= "../menu">  <button  class="btn-celeste mr-2">Atrás</button></a
+            </div>
+        </div>
+    </div>
+</body>
+</html>

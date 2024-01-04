@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu de edicion</title>
+    <!-- Agregar el enlace a Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    
+    <style>
+        /* Estilos personalizados para el cuadro */
+        .cuadro {
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        } 
+
+    </style> 
+</head>
+<body style="font-family: sans-serif;">
+    <div class="container mt-5">
+        <div class="cuadro" style="margin:auto;width:40%;">
+            <img src="{% static "images/iot.png" %}">
+            <h1 class="mt-4" style="height: 50px;border-radius: 10px;"><strong>Menu de edicion</strong></h1>
+          <br>
+            <a href="../create-line"><button class=" btn-celeste" style="font-size: 15px;background:#0d6efd;color:white;border:none;width: 200px;height: 50px;border-radius: 10px;">Crear nueva linea</button></a>
+          <br>
+          <a href="../delete-line"> <button class="btn btn-celeste" style="font-size: 15px;background:#0d6efd;color:white;margin-top:20px;border:none;width: 200px;height: 50px;border-radius: 10px">Eliminar linea</button></a>
+          <br>
+          <a href="../mod-line"><button class="btn btn-celeste" style="font-size: 15px;background:#0d6efd;color:white;margin-top:20px;border:none;width: 200px;height: 50px;border-radius: 10px">Modificar linea existente</button></a>
+          <br>
+          <a href="../create-user"><button class="btn btn-celeste" style="font-size: 15px;background:#0d6efd;color:white;margin-top:20px;border:none;width: 200px;height: 50px;border-radius: 10px">Crear nuevo usuario</button></a>
+          <br>
+          
+          <a href="../schedule_config"><button class="btn btn-celeste" style="font-size: 15px;background:#0d6efd;color:white;margin-top:20px;border:none;width: 200px;height: 50px;border-radius: 10px">Configuracion de turnos</button></a>
+          <br>
+          <button class="btn btn-celeste" data-bs-toggle="modal" data-bs-target="#crearSupervisorModal" style="font-size: 15px;background:#0d6efd;color:white;margin-top:20px;border:none;width: 200px;height: 50px;border-radius: 10px">Crear supervisor de mantenimiento</button>
+          <a href="../shift"><button class="btn btn-celeste" style="font-size: 15px;background:#0d6efd;color:white;margin-top:20px;float:right;border:none;width: 200px;height: 50px;border-radius: 10px">Atras</button></a>
+        </div>
+    </div>
+
+    <!-- Modal para crear supervisor de mantenimiento -->
+    <div class="modal fade" id="crearSupervisorModal" tabindex="-1" aria-labelledby="crearSupervisorModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#0d6efd; color:white">
+                    <h5 class="modal-title" id="crearSupervisorModalLabel">Crear Supervisor de Mantenimiento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="" method="Post">
+                        <div class="mb-3">
+                            {% csrf_token %}
+                            <label for="otroCampo" class="form-label">Nombre y Apellido</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="correo" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="correo" name="correo" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Enviar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

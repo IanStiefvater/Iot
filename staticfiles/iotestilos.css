@@ -1,0 +1,93 @@
+/* estilos.css */
+/* Estilo personalizado para el cuadro */
+.cuadro {
+    border: 2px solid lightgray;
+    border-radius: 20px;
+    padding: 50px;
+    text-align: left;
+}
+
+/* Estilo personalizado para el logo */
+.logo {
+    width: 200px; /* Ajusta el tamaño del logo según tus necesidades */
+}
+
+
+
+.cuadro-personalizado {
+    border: 2px solid #000;
+    border-radius: 20px;
+    background-color: #42b6ef;
+    padding: 5px;
+    color: #fff; /* Texto en color blanco */
+    margin-bottom: 20px; /* Espacio entre los cuadros */
+    width: 300px;
+    height: 100px;
+}
+
+
+.cuadro-personalizado .titulo-grande {
+    font-size: 30px;
+    margin-bottom: 5px; /* Espacio debajo del título */
+}
+
+.cuadro-personalizado .titulo-chico {
+    font-size: 18px;
+    margin-bottom: 1px; /* Espacio debajo del título */
+}
+
+.cuadro-personalizado .subtitulo {
+    font-size: 22px;
+    margin-top: 10px; /* Espacio encima del subtítulo */
+}
+
+.cuadro-de-texto {
+    width: 50%; /* Ancho del 100% para ocupar el ancho del cuadro padre */
+    height: 150px; /* Altura deseada para el cuadro de texto */
+    resize: vertical; /* Permite redimensionar verticalmente */
+}
+
+.btn-celeste {
+    border-radius: 20px;
+    background-color: #42b6ef;
+    color: #fff; /* Texto en color blanco */
+    width: 250px; /* Ancho deseado para los botones */
+    height: 65px;
+    font-size: 30px;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.texto-cuadro {
+    margin-bottom: 0px; /* Ajusta este valor según el espacio deseado entre los textos */
+}
+
+.separador {
+    border-right: 2px solid #000; /* Color y grosor de la línea */
+    margin-bottom: 5px;
+}
+
+.titulo {
+    margin-bottom: 40px;
+
+}
+
+.boton-circular {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Hace que el botón sea circular */
+    background-color: #202020; /* Color de fondo gris */
+    color: #fff; /* Color del texto blanco */
+    font-size:30px; /* Tamaño del texto */
+    border: none; /* Quita los bordes */
+    cursor: pointer; /* Cambia el cursor al pasar por encima */
+    margin-top:20px;
+    line-height: 10px;
+}
+
+.text-celeste {
+    color: #0a96e4; /* Puedes ajustar el color a tu preferencia */
+}
+.fff {
+    width: 35%;
+}

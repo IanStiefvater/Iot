@@ -1,0 +1,561 @@
+{% load filter %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>Control</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
+
+
+<!-- Load d3.js and c3.js -->
+
+
+</head>
+<body>
+ 
+    <div class="fondo" style="background-image: url('{% static "images/Montana.jpg" %}');">
+     
+      <div class="container">
+        <div class="row ">
+            <div class="mt-5 py-3 px-5 mb-5  col-6 mx-auto card" style="height: 300px; border-radius: 10px; box-shadow: 0 0 4px 0 rgba(0,0,0,.14), 0 3px 4px 0 rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2);opacity:85%;width:40%">
+              <h2 class="mb-5 mt-3"style="font-size: 40px;">Responsable</h2>
+               <div class="col-12 d-flex align-items-center justify-content-evenly">   
+                  <div class="row mx-5 col-12">
+                      <div class="row-6 d-flex justify-content-center">
+                          <input style="height: 75px; font-size: 20px; border-radius: 10px;" type="text" name="username"  value="{{name}}" disabled class="col-12 d-flex text-center mx-auto" id="floatingInput" placeholder="{{name}}">
+                      </div>
+                      <div class="row-6 d-flex justify-content-center">
+                          <input style="height: 75px; background-color: #0d6efd; color: white; font-size: 20px; border-radius: 10px;margin-top:2%" type="text" name="username"  value="{{turno}}" disabled class="col-12 d-flex text-center mx-auto" id="floatingInput" placeholder="{{name}}">
+                      </div>
+                  </div>
+                </div>
+              </div>   
+            
+            <div class="mt-5 py-3 px-5 mb-5  col-8 mx-auto card" style="height: 30%; border-radius: 10px; box-shadow: 0 0 4px 0 rgba(0,0,0,.14), 0 3px 4px 0 rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2);opacity:85%;width:30%;text-align:center;">
+              <h2 class="mb-5 mt-3">Tiempo operando en el {{turno}}</h2>
+              <h2 id="datos-api"> </h2>
+               <div class="col-8 d-flex align-items-center justify-content-evenly">   
+                </div>
+              </div>   
+            </div>
+        </div>
+      </div>
+      <script >
+        document.addEventListener('DOMContentLoaded', function() {
+      function actualizarH2ConAPI() {
+        // Hacer la solicitud a la API usando fetch
+        fetch('https://leantronic.online/prueba/linemanagement/shift_hour')
+            .then(response => response.json())
+            .then(data => {
+                // Obtener el valor que quieres mostrar en el h2
+                const valor = data.clock; // Reemplaza 'tu_valor' con el nombre real del campo en el JSON
+                //console.log(valor ,"hola")
+                // Actualizar el h2 con el valor obtenido
+                document.getElementById('datos-api').textContent = valor;
+            })
+            .catch(error => {
+                console.error('Error al obtener datos desde la API clock:', error);
+            });
+    }
+    actualizarH2ConAPI();
+
+    
+    // Llamar a la función para actualizar el h2 cada minuto
+    setInterval(actualizarH2ConAPI, 1000); 
+  });// 60000 milisegundos = 1 minuto
+  window.onload = function() {
+    history.replaceState("", document.title, window.location.pathname + window.location.search);
+}
+
+  </script>
+
+<div style="display: flex; height: 60px; background: #1570be; color: white;">
+            <h2 style="font-size: 35px; align-items: center; margin-left: 6%;" class="mb-5" >Datos Operativos</h2>
+          </div>
+            {{shift}} 
+            {% for line in namelines %}
+            <div class="row px-5 py-5 card col-11 mx-auto my-3" style="border-radius: 10px; box-shadow: 0 0 4px 0 rgba(0,0,0,.14), 0 3px 4px 0 rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2); width: 80%;padding-bottom: 8rem!important;">
+        
+                <div class="row mx-auto col-12 d-flex justify-content-evenly" style="border-radius: 10px;background: #1570be;height: 60px;  justify-content: center; align-items: center;">
+                    <div class="col-4 d-flex">
+                        <input style="height: 35px; font-size: 20px; border-radius: 10px;background:#0d6efd;color:white" type="text" name="line[]" value="{{ line }}" disabled class="col-12 mx-auto text-center" id="floatingInput" placeholder="{{ name }}">
+                    </div>
+        
+                    {% if status|get_item:line == "Activa" %}
+                    <div class="col-4 d-flex justify-content-center" style="background-color: none; border: none;">
+                        <input type="text" name="status" value="{{ status|get_item:line }}" disabled style="background-color: #077a16bf; height: 35px; font-size: 20px; border-radius: 10px;" class="col-12 border-0 text-white mx-auto text-center" id="floatingInput" placeholder="{{ name }}">
+                    </div>
+                    {% endif %}
+                    {% if status|get_item:line != "Activa" %}
+                    <div class="col-4 d-flex justify-content-center te" style="background-color: none; border: none;">
+                        <input type="text" name="status" value="{{ status|get_item:line }}" disabled style="background-color: red; height: 35px; font-size: 20px; border-radius: 10px;" class="col-12 border-0 text-white mx-auto text-center" id="floatingInput" placeholder="{{ name }}">
+                    </div>
+                    {% endif %}
+                    <div class="col-2 offset-md-2 d-flex">
+                    <a href="#{{ line|cut:" "  }}"> <button class="toggle-button{{ forloop.counter }} btn btn-primary " style="background: #1570be; border-color: #1570be;"><span class="material-symbols-outlined" style="font-size: 40px;">
+                      stat_minus_1
+                      </span></button><!--mostrar detalles --> </a>
+                    </div>
+                </div>
+               
+
+                <canvas id="chart_div{{line|safe|cut:" "}}" style="width: 1000px; height: 500px;margin-left:25%;margin-top:1%"></canvas>
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <div id="dataCard{{line|safe}}" style=" display: none; width: 25%; margin-top: -24%; margin-bottom:5%; padding: 20px; border-radius: 5px;border: 1px solid black;">
+                  <!-- Los datos de la API se insertarán aquí -->
+                </div>
+                <script>
+                  // Función para llamar a la API y actualizar el div
+async function fetchData() {
+  try {
+    let line="{{line|safe}}"
+   let nameline= line.split(' ').join('');
+    console.log(nameline)
+  
+const urlCompleta = window.location.href;
+const nuevaUrl = urlCompleta.slice(0, -4);
+    const urlapi = `${nuevaUrl}linesdetails/${nameline}`;
+    console.log(urlapi)
+    // Realizar la petición a la API
+    const response = await fetch(urlapi );
+    
+    // Convertir la respuesta a JSON
+    const data = await response.json();
+    
+    // Obtener el div donde se mostrarán los datos usando el ID
+    const card = document.getElementById('dataCard{{line|safe}}');
+    if (typeof data.temperature === 'undefined') {
+      data.temperature = "0";
+    }
+    
+    // Actualizar el div con los datos de la API
+    card.innerHTML = `
+    
+  
+      <p style="color: #0a7bea; font-weight: bold;">Produccion de la ultima hora ${data.produccion}</p>
+      <p style="color: #0a7bea; font-weight: bold;">Temperatura promedio de la ultima hora:  ${data.temperature}</p>
+
+
+    `;
+  } catch (error) {
+    console.error('Ocurrió un error al obtener los datos:', error);
+  }
+}
+
+// Llamar a la función para obtener los datos al cargar la página
+window.addEventListener('load', fetchData);
+setInterval(fetchData, 300000);
+
+                </script>  
+                {% comment %} <div class="card" id="" style="width: 30%; margin-top: -24%; margin-bottom:5%; padding: 20px; border-radius: 5px;border: 1px solid black;">
+                  <p style="color: #4c9987; font-weight: bold;">Inicio de linea:</p>
+                  <p style="color: #4c9987; font-weight: bold;">Tiempo de actividad:</p>
+                  <p style="color: #0a7bea; font-weight: bold;">PT:</p>
+                  <p style="color: #0a7bea; font-weight: bold;">PH:</p>
+                  <p style="color: #d9ca4c; font-weight: bold;">Gasto energetico de planta:</p>
+                  <p style="color: #e02d30; font-weight: bold;">Temperatura:</p>
+                </div> {% endcomment %}
+             
+                
+                 
+        
+                
+                <script type="text/javascript">
+                  // Realizar una solicitud AJAX para obtener los datos
+                  console.log("#chart_div{{line|safe|cut:" "}}")
+                                
+                  // Declarar la variable chart dentro de una función
+                  function generateChart() {
+                    // Generar el gráfico
+                    $(document).ready(function() {
+                      $.ajax({
+                        url: "https://leantronic.online/prueba/linemanagement/graph/lines/{{line|safe}}",
+                        type: "GET",
+                        success: function(response) {
+
+                         
+                          function getRandomColor() {
+                            let letters = '0123456789ABCDEF';
+                            let color = '#';
+                            for (let i = 0; i < 6; i++) {
+                              color += letters[Math.floor(Math.random() * 16)];
+                            }
+                            return color;
+                          }
+
+                           // Reemplaza "respuesta" con tu respuesta JSON
+                          console.log("respuesta: "+ JSON.stringify(response));
+                          let dataset = [];
+
+                          for (let i = 1; i <= response.quantity; i++) {
+                            let deviceDataKey = `device_${i}_production_data`;
+                            let deviceName = response.devices_name[i-1];
+                            let deviceTime = `device_${i}_production_time`;
+                            dataValues= []
+                            console.log("hoila:",response[deviceTime][i]);  // Imprime el contenido de deviceTime para verificar que es un array
+                            console.log("saludo:",deviceDataKey);  // Imprime el contenido de deviceDataKey para verificar que es un array
+                            
+                            for (let i = 0; i < deviceTime.length; i++) {
+                              dataValues.push({ x: (new Date(response[deviceTime][i])), y: response[deviceDataKey][i] });
+                            }
+                            dataset.push({
+                              'label' :deviceName,
+                              'data': dataValues,
+                              'fill': false,
+                              'borderColor': getRandomColor(),                             
+                            });
+                          }
+                          console.log("el dataset es" + JSON.stringify(dataset));
+
+                          let linea ='chart_div{{line|safe|cut:" "}}';
+                          console.log("linea:", linea);
+                          const ctx = document.getElementById(linea).getContext('2d');
+                          var chart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                              datasets: dataset
+                            },
+                            options: {
+                              scales: {
+                                  x: {
+                                      type: 'time',
+                                      time: {
+                                          displayFormats: {
+                                              minute: 'HH:mm'
+                                          },
+                                          tooltipFormat: 'HH:mm'
+                                      },
+                                      ticks: {
+                                          autoSkip: true,
+                                          maxTicksLimit: 24 // Limitar el número de ticks para evitar el hacinamiento
+                                      }
+                                  },
+                                  y: {
+                                      beginAtZero: true
+                                  }
+                              }
+                          }
+                          });
+                          
+                        }
+                      });
+                    });
+                  }
+                      
+                  // Llamar a la función para generar el gráfico
+                  setInterval(generateChart, 180000);
+                  generateChart();
+                </script>
+        
+                <div class="additional-content{{ forloop.counter }}" style="display: none; margin-top: 5%;">
+                  
+                  
+             
+                    <div id="{{line|cut:" " }}" class="">
+                      <div class="row mt-5" style="margin-left:12%">
+                      
+                        {% for device in device_items %}
+                       
+                          {% with items=device.items %}
+                              {% if device.line == line%}    
+                             
+                                  <div class="row  mx-auto col-md-6 ">                                                       
+                                    <form action="" class="card my-2 col-8 device-activo" style="border: 1px solid black;">
+                                      <div class="d-flex justify-content-center row my-3" style="font-weight: bolder;">
+                                          <a href="./maintenance?deviceID={{ device.id }}&device_name={{ device.name }}&line={{ line }}&username={{ name }}&shift={{ turno }}&line_status={{ device.status }}" target="_self" style="cursor: pointer;" class="card {% if device.status == 'activo' %}href-activo{% elif device.status == 'inactivo' %}href-inactivo{% else %}href-espera{% endif %} mx-2">
+                                            <div style="display: flex; justify-content: center; align-items: center; height: 50px; background: #1570be; color: white; border-radius: 5px;">
+                                              <p style="margin: 0;">DISPOSITIVO: {{ device.name }}</p>
+                                            </div>
+                                           
+                                              {% if device.status == 'activo' %}
+                                              <p class=" mt-1" style="color:green; font-size: 20px;">  Activo
+                                              {% elif device.status == 'inactivo' %}
+                                              <p class="btn-danger btn-sm mt-1" style="color:white; font-size: 20px;">   Inactivo
+                                             
+                                              {% endif %}
+                                          </p>
+                                              {% comment %} <p class="text-center" style="color:black" >{{ device.name }} </p> {% endcomment %}
+
+                                           
+                                            
+                                              <div id="device-info-{{ line | safe }}-{{ device.deviceId | safe}}" data-line="{{ line | safe }}" data-device-id="{{ device.deviceId | safe }}">
+                                         
+                                                <!-- Aquí se mostrarán los datos del dispositivo {{ device.device_id }} -->
+                                            </div>  
+                                            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                                            <script>
+                                              var lineValue = "{{ line | safe  }}";
+                                                 // lineValue=lineValue.replace(/\s+/g, '');
+                                                  //console.log(lineValue);
+                                                    var deviceIdValue = "{{ device.deviceId | safe }}";
+                                                   // console.log(deviceIdValue);
+                                                   // console.log(`https://leantronic.online/prueba/linemanagement/lines/${lineValue}/device/${deviceIdValue}/`)
+                                              //console.log(`device-info-${lineValue}-${deviceIdValue}`)
+                                              //console.log('.additional-content' + lineValue)
+                                             
+                                                $(document).ready(function() {
+                                                    
+                                                       
+                                                           
+                                                                var lineValue = "{{ line | safe }}";
+                                                                var deviceIdValue = "{{ device.deviceId | safe }}";
+                                                                setTimeout(function() {
+                                                                  obtenerDeviceInfo(lineValue, deviceIdValue);
+                                                              }, 300); 
+                                                              setTimeout(obtenerDeviceInfo, 5 * 60 * 1000); 
+                                                      
+                                                  
+                                                });
+                                            </script>
+                                            
+
+                                            
+                                         
+                                          
+
+                                          </a>
+                                      </div>
+                                      <div id="warning-container">
+                                        {% if device_warnings|get_item:device_id == "Sin envío de datos" %}
+                                            <p>{{ device_warnings|get_item:device_id }}</p>
+                                        {% endif %}
+                                      </div>
+                                    </form>
+                                    
+                                </div>
+                               
+                              {% endif %}
+                          {% endwith %}
+             
+                        {% endfor %}
+                                            
+             
+                      </div>
+                      </div>
+                    </div>
+                </div>
+                
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          var counter = {{ forloop.counter }};
+          var toggleButton = document.querySelector('.toggle-button' + counter);
+          var additionalContent = document.querySelector('.additional-content' + counter);
+
+          toggleButton.addEventListener('click', function() {
+              if (additionalContent.style.display === 'none') {
+                  additionalContent.style.display = 'block';
+              } else {
+                  additionalContent.style.display = 'none';
+              }
+          });
+      });
+  </script>
+              {% endfor %}
+            </div>
+            <div class="row px-5 py-5 card col-11 mx-auto my-3" style="border-radius: 10px; box-shadow: 0 0 4px 0 rgba(0,0,0,.14), 0 3px 4px 0 rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2); width: 80%;">
+                <div class="row mx-5 mt-3">
+                    
+                    <div class="col-5 ml-1">
+                        <form action="" method="POST">
+                          {% csrf_token %}
+                        <input value{{turno}} name="turno" class="d-none" style="height: 75px;">
+                        <input type="submit"  value="FIN DE TURNO" class="form-control  btn  btn-primary" id="floatingInput" style="height: 75px; font-size: 20px;">
+                      
+                        <form>
+                    </div>
+                  
+                    <div class="col-2 ml-1">
+                        <button class="btn btn-secondary px-4 py-2" id="clock" style="height: 75px; font-size: 20px;"></button>
+                    </div>
+                    <div class="col-3 mx-5">
+                        <input type="text" name="username"  value="{{turno}}" disabled class="col-12 text-center" id="floatingInput" placeholder="{{name}}" style="height: 75px; font-size: 20px;">
+                    </div>
+                    
+                </div>
+
+            </div>
+           
+            
+          
+          
+          
+          
+          
+            <script>
+              let deviceWarnings = JSON.parse('{{ device_warnings|safe }}');
+              let reloadInterval = 320000; // 320 segundos en milisegundos
+            
+              function hasActiveWarnings() {
+                for (let deviceId in deviceWarnings) {
+                  if (deviceWarnings[deviceId] === "Sin envío de datos") {
+                    return true;
+                  }
+                }
+                return false;
+              }
+            
+              if (hasActiveWarnings()) {
+                setInterval(function() {
+                  window.location.reload();
+                }, reloadInterval);
+              }
+            </script>
+              
+
+           
+            <script>
+                function updateClock() {
+                  var now = new Date();
+                  var hours = now.getHours();
+                  var minutes = now.getMinutes();
+                  var seconds = now.getSeconds();
+                  var timeString = hours.toString().padStart(2, "0") + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
+                  document.getElementById("clock").innerHTML = timeString;
+                }
+              
+                setInterval(updateClock, 1000);
+              </script>
+
+              <script>
+                $(function() {
+                    $('device-search').on('input', function() {
+                        var query = $(this).val();
+                        $.getJSON('/search_products/' + query, function(data) {
+                            $('#search-results').empty();
+                            $.each(data, function(index, product) {
+                                $('<li>').text(product.name + ': $' + product.price).appendTo('#search-results');
+                            });
+                        });
+                    });
+                });
+              </script>
+              {% if reload_page %}
+                <script>
+                    window.location.reload();
+                </script>
+
+              {% endif %}
+              
+              <script>
+                function obtenerDeviceInfo(lineid, deviceid) {
+                  lineidsinsaltos= lineid.replace(/\s+/g, '');
+                  //console.log(lineid);
+                 // console.log(`./lines/${lineid}/device/${deviceid}/`)
+                  $.ajax({
+                    url: `https://leantronic.online/prueba/linemanagement/lines/${lineidsinsaltos}/device/${deviceid}/`,  // Utilizar los valores de los parámetros
+                    method: 'GET',
+                    success: function(data) {
+                      var phValue = data.PH; 
+                    //  console.log(phValue[0])
+                      //console.log(phValue[1]);
+                    
+                         var deviceInfo = document.getElementById(`device-info-${lineid}-${deviceid}`);
+                       //console.log(deviceInfo);
+                       
+                       deviceInfo.innerHTML = `
+                       <p><span class="ph-label" style="color: #0a7bea;">Última hora:</span> <span style="color: black;">${phValue[0]}</span></p>
+                       <p><span class="pt-label" style="color: #0a7bea;">Producción Total:</span>  <span style="color: black;">${data.Produccion_Total}</span></p> 
+                        <p><span class="vol-label" style="color: #d9ca4c;">Voltage:</span> <span style="color: black;">${data.voltage}</span></p>
+                        <p><span class="vol-label" style="color: #d9ca4c;">Porcentaje de Bateria:</span> <span style="color: black;">${data.battery_percentage}</span></p>
+                        <p><span class="temperatura-label" style="color: #e02d30;">Temperatura:</span><span style="color: black;"> ${data.temperature}</span></p>
+
+                         
+                            <!-- Otros datos -->
+                        `;
+                    },
+                    error: function(error) {
+                        console.error('Error al obtener datos de la API:', error);
+                    }
+                  });
+                   
+                }
+        
+             
+            </script>  
+                                
+
+
+
+
+
+
+    </div> 
+    <style>
+
+      #chart_div {
+        margin-left: auto;
+        margin-right: 0;
+      }
+
+      {% comment %} .device-activo {
+        background-color: #dbdedcbf;
+      } {% endcomment %}
+
+      .device-inactivo {
+          background-color: red;
+      }
+
+      .device-espera {
+          background-color: #C9C8BA;
+      }
+      .href-activo {
+        border: none;
+        background-color: #077a1600;
+        text-decoration: none;
+        color: #FFFFFF;
+      }
+
+      .href-inactivo {
+        border: none;
+        background-color: rgba(255, 0, 0, 0);
+        text-decoration: none;
+          color: #FFFFFF;
+      }
+
+      .href-espera {
+        border: none;
+        background-color: #c9c8ba00;
+        text-decoration: none;
+        color: #3f3f3f;
+      }      
+      .href-activo:hover {
+        border: none;
+        background-color: #077a1600;
+        text-decoration: none;
+        color: #FFFFFF;
+      }
+
+      .href-inactivo:hover {
+        border: none;
+        background-color: rgba(255, 0, 0, 0);
+        text-decoration: none;
+          color: #FFFFFF;
+      }
+
+      .href-espera:hover {
+        border: none;
+        background-color: #c9c8ba00;
+        text-decoration: none;
+        color: #3f3f3f;
+      }
+     
+      .fondo {
+          background-image: url('/home/leantronic/public_html/prueba/lineManagement/static/css/FD3S2EY66BCI5GNWHEUVQ25SY4.jpg');
+          background-size: cover;
+          background-repeat: no-repeat;
+        }
+        
+        </style>
+</body>
+</html>
+

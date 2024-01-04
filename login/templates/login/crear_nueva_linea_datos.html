@@ -1,0 +1,110 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Nueva Línea</title>
+    <!-- Enlace al archivo CSS externo -->
+    <link rel="stylesheet" href="{% static 'iotestilos.css' %}">
+    <!-- Enlace a Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <style>
+        /* Estilos para redondear el input */
+        .rounded-input {
+            border: 2px solid #ccc;
+            border-radius: 25px;
+            padding: 5px 10px;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <form method="post">
+    <div class="container mt-5">
+        <div class="cuadro" style="width:max-content;margin:auto">
+           
+                {% csrf_token %}
+            <img src="{% static '/images/iot.png' %}" alt="Logo" class="logo">
+            <h1 class="titulo">Crear Nueva Línea</h1>
+
+            <!--<h2>{{linea}}: <input type="text" id="nombreLinea" name="nameline" class="rounded-input text-celeste" placeholder="Ingrese el nombre"></h2>-->
+            <input type="hidden"  name="line" value="{{linea}}">
+      
+          
+
+            <div class="row mt-4 fff" style="margin-left:auto;margin-right:10%">
+                <div class="col-md-4 mb-4">
+                    <div class="cuadro-personalizado" style="float:right;margin-top:100%;width:900%">
+                        <div class="row">
+                            <!-- Columna 1 -->
+                            <div class="col-md-4 my-auto mx-auto text-center  border-right">
+                                <h3 class=" texto-cuadro ">{{linea}}</h3>
+                                
+                            </div>
+                            <div class="col-md-1 separador"></div>
+                            <!-- Columna 2 -->
+                            <input type="hidden"  name="linea" value="{{linea}}">
+                            <div class="col-md-4 mx-auto my-auto text-center">
+                                <p class="titulo-chico texto-cuadro" style="font-size:x-small">Dispositivos</p>
+                                <p class="titulo-chico texto-cuadro">IOT</p>
+                                <h3 id="contador" class="titulo-grande texto-cuadro">0</h3>
+                                <input type="hidden" id="contadorInput" name="amountDevice" value="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Botón circular a la derecha fuera del cuadro -->
+                <div class=" col-md-4 ">
+                    <button id="aumentar" class="boton-circular" type="button">+</button>
+                    <button id="disminuir" class="boton-circular" type="button">-</button>
+                </div>
+            </div>
+            <h4 style="font-size:larger"><a href="#" style="font-size:unset">¿Quiere agregar dispositivos a su nueva línea?</a></h4>
+            <h4 style="font-size:larger">Presione el botón + o -</h4>
+            <div class="text-center mt-3" style="margin-left:70%">
+                <button class="btn-celeste" type="submit" style="font-size:larger;width:max-content;margin-left:auto">Guardar Cambios</button>
+            </div>
+       
+        </div>
+    </div>
+    </div>
+</form>
+    <script>
+        // Obtener referencias a los elementos HTML que necesitamos
+       // Obtener referencias a los elementos HTML que necesitamos
+const contadorElement = document.getElementById("contador");
+const aumentarBoton = document.getElementById("aumentar");
+const disminuirBoton = document.getElementById("disminuir");
+const contadorInput = document.getElementById("contadorInput"); // Nuevo campo oculto
+
+// Inicializar el contador
+let contador = 0;
+
+// Función para actualizar el contador en la página y en el campo oculto
+function actualizarContador() {
+    contadorElement.textContent = contador;
+    contadorInput.value = contador; // Actualizar el valor del campo oculto
+}
+
+// Manejar el evento de clic en el botón de aumento
+aumentarBoton.addEventListener("click", function () {
+    contador++;
+    actualizarContador();
+});
+
+// Manejar el evento de clic en el botón de disminución
+disminuirBoton.addEventListener("click", function () {
+    if (contador > 0) {
+        contador--;
+        actualizarContador();
+    }
+});
+
+// Inicializar el contador en la página
+actualizarContador();
+
+    </script>
+</body>
+</html>

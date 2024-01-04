@@ -1,0 +1,47 @@
+{% load  static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eliminar Linea</title>
+    <!-- Enlace al archivo CSS externo -->
+    <link rel="stylesheet" href="{% static 'iotestilos.css' %}">
+    <!-- Enlace a Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="cuadro"style="width:50%;margin:auto;border:solid">
+            <img src="{% static '/images/iot.png' %}" alt="Logo" class="logo">
+            <h1>Eliminar Linea</h1>
+            <h4>Selecciona la línea o líneas a eliminar.</h4>
+           <form method="POST">
+            {% csrf_token %}
+            <div class="row mt-4">
+                <!-- Cuadro 1 -->
+                <select name="delete-line" style="border-radius:18px">
+                    <option value="0" selected >Seleccione una linea</option>
+                    
+                  
+                 
+                {% for name in lines %}
+                <option value="{{name}}">{{name}}</option>
+                {% endfor %}
+            </select>
+     
+           
+                <!-- Puedes aplicar las mismas modificaciones a los demás cuadros -->
+            </div>
+            <h2>Nota</h2>
+            <textarea class="cuadro-de-texto" name="nota" rows="4"></textarea>
+            <div class="text-center mt-3"style="display:flex">
+               <button class="btn-celeste mr-2" style="width:50%"> <a style=" text-decoration: none;color: inherit;" href="../menu">Atrás</a></button>
+                <button type="submit" class="btn-celeste" style="width:50%; font-size: 22px">Eliminar Línea</button>
+            </div>
+            <form>
+        </div>
+    </div>
+</body>
+</html>
